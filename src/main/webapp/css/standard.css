@@ -1,3 +1,7 @@
+body{
+	background-color: #FFFFCC;
+}
+
 .card {
 	float: left;
 	margin-right: 5px;
