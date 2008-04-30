@@ -1,0 +1,40 @@
+<wicket:extend>
+
+<h2><wicket:message key="planningSessions"></wicket:message></h2>
+<table wicket:id="planningSessionsContainer">
+	<thead>
+		<tr>
+			<th><wicket:message key="title"></wicket:message></th>
+			<th><wicket:message key="participants"></wicket:message></th>
+			<th></th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr wicket:id="planningSessions">
+			<td wicket:id="title"></td>
+			<td wicket:id="participants"></td>
+			<td><a wicket:id="joinLink"><wicket:message key="join"></wicket:message></a></td>
+		</tr>
+	</tbody>
+</table>
+
+<hr />
+
+<h2><wicket:message key="createNewPlanningSession"></wicket:message></h2>
+<form wicket:id="form">
+	<p>
+		<wicket:message key="title"></wicket:message><br />
+		<input type="text" wicket:id="title" />
+	</p>
+	
+	<p>
+		<wicket:message key="yourName"></wicket:message><br />
+		<input type="text" wicket:id="name" />
+	</p>
+	
+	<p>
+		<input type="submit" wicket:id="createSession" />
+	</p>
+</form>
+
+</wicket:extend>

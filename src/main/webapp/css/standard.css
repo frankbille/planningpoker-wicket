@@ -1,0 +1,8 @@
+.card {
+	float: left;
+	margin-right: 5px;
+}
+
+.card a img {
+	border: 0;
+}
