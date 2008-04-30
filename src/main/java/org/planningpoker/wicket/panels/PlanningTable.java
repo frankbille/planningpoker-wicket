@@ -2,6 +2,8 @@ package org.planningpoker.wicket.panels;
 
 import java.util.List;
 
+import org.apache.wicket.AttributeModifier;
+import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.image.Image;
 import org.apache.wicket.markup.html.list.ListItem;
@@ -50,8 +52,35 @@ public class PlanningTable extends Panel<PlanningSession> {
 				item.add(new Label<String>("status", new StringResourceModel(
 						"status.${name()}", this, statusModel)));
 
-				item.add(new Label<Long>("ping", new PropertyModel<Long>(item
-						.getModel(), "millisSinceLastPing")));
+				WebMarkupContainer<Object> pingComponent = new WebMarkupContainer<Object>(
+						"ping");
+				AbstractReadOnlyModel<String> cssClassModel = new AbstractReadOnlyModel<String>() {
+					private static final long serialVersionUID = 1L;
+
+					@Override
+					public String getObject() {
+						Participant participant = item.getModelObject();
+						long millisSinceLastPing = participant
+								.getMillisSinceLastPing();
+
+						String cssClass = null;
+
+						if (millisSinceLastPing <= 2000) {
+							cssClass = "participantStatusGood";
+						} else if (millisSinceLastPing <= 6000) {
+							cssClass = "participantStatusMedium";
+						} else if (millisSinceLastPing <= 10000) {
+							cssClass = "participantStatusWarning";
+						} else {
+							cssClass = "participantStatusProblem";
+						}
+
+						return cssClass;
+					}
+				};
+				pingComponent.add(new AttributeModifier("class", true,
+						cssClassModel));
+				item.add(pingComponent);
 
 				IModel<CardImageResourceReference> cardModel = new AbstractReadOnlyModel<CardImageResourceReference>() {
 					private static final long serialVersionUID = 1L;

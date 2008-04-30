@@ -23,24 +23,30 @@ import org.apache.wicket.util.time.Duration;
 public class AjaxSelfUpdatingTimerBehavior extends AbstractAjaxTimerBehavior {
 	private static final long serialVersionUID = 1L;
 
-	private final ObjectState state;
+	private final IObjectState state;
 
 	public AjaxSelfUpdatingTimerBehavior(Duration updateInterval) {
+		this(updateInterval, new SerializableObjectState());
+	}
+
+	public AjaxSelfUpdatingTimerBehavior(Duration updateInterval,
+			IObjectState objectState) {
 		super(updateInterval);
 
-		state = new ObjectState(null);
+		state = objectState;
+		state.checkState(null);
 	}
 
 	@Override
 	protected void onBind() {
 		super.onBind();
 
-		state.newState(getStateObject());
+		state.checkState(getStateObject());
 	}
 
 	@Override
 	protected void onTimer(AjaxRequestTarget target) {
-		if (state.newState(getStateObject())) {
+		if (state.checkState(getStateObject())) {
 			target.addComponent(getComponent());
 
 			onPostTimerUpdated(target);
@@ -49,7 +55,7 @@ public class AjaxSelfUpdatingTimerBehavior extends AbstractAjaxTimerBehavior {
 
 	@Override
 	protected void onHeadRendered(IHeaderResponse response) {
-		state.newState(getComponent().getModelObject());
+		state.checkState(getComponent().getModelObject());
 	}
 
 	protected void onPostTimerUpdated(AjaxRequestTarget target) {

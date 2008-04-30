@@ -96,21 +96,23 @@ public class AjaxCompoundUpdatingTimerBehavior extends
 	private static class UpdatingComponentState implements Serializable {
 		private static final long serialVersionUID = 1L;
 
-		private ObjectState objectState;
+		private final IObjectState objectState;
 		private final IUpdatingComponent updatingComponent;
 
 		public UpdatingComponentState(IUpdatingComponent updatingComponent) {
+			this(updatingComponent, new SerializableObjectState());
+		}
+
+		public UpdatingComponentState(IUpdatingComponent updatingComponent,
+				IObjectState objectState) {
 			this.updatingComponent = updatingComponent;
+			this.objectState = objectState;
 		}
 
 		public boolean updateState(Component<?> component) {
 			Object stateObject = updatingComponent.getStateObject(component);
 
-			if (objectState == null) {
-				objectState = new ObjectState(stateObject);
-			}
-
-			return objectState.newState(stateObject);
+			return objectState.checkState(stateObject);
 		}
 
 		public boolean isEnabled(Component<?> component) {
@@ -182,6 +184,11 @@ public class AjaxCompoundUpdatingTimerBehavior extends
 	}
 
 	public void add(Component<?> component, IUpdatingComponent updatingComponent) {
+		add(component, updatingComponent, new SerializableObjectState());
+	}
+
+	public void add(Component<?> component,
+			IUpdatingComponent updatingComponent, IObjectState objectState) {
 		add(new ComponentUpdatingListener(component, updatingComponent));
 	}
 

@@ -10,3 +10,27 @@ body{
 .card a img {
 	border: 0;
 }
+
+.participantStatusGood {
+	width: 16px;
+	height: 16px;
+	background: url(../images/flag_green.png) no-repeat center center;
+}
+
+.participantStatusMedium {
+	width: 16px;
+	height: 16px;
+	background: url(../images/flag_yellow.png) no-repeat center center;
+}
+
+.participantStatusWarning {
+	width: 16px;
+	height: 16px;
+	background: url(../images/flag_orange.png) no-repeat center center;
+}
+
+.participantStatusProblem {
+	width: 16px;
+	height: 16px;
+	background: url(../images/flag_red.png) no-repeat center center;
+}

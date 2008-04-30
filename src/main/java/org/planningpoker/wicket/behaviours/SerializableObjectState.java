@@ -4,32 +4,28 @@ import java.io.Serializable;
 
 import org.apache.wicket.util.lang.Objects;
 
-public final class ObjectState implements Serializable {
+public final class SerializableObjectState implements IObjectState {
 	private static final long serialVersionUID = 1L;
 
 	private transient String state;
 
-	public ObjectState(Object object) {
-		newState(object);
+	public SerializableObjectState() {
+		checkState(null);
 	}
 
-	public ObjectState(Serializable object) {
-		newState(object);
-	}
-
-	public boolean newState(Object object) {
+	public boolean checkState(Object object) {
 		if (object != null && object instanceof Serializable == false) {
 			throw new IllegalArgumentException(
 					"The object must be Serializable: " + object);
 		}
 
-		return newState((Serializable) object);
+		return checkState((Serializable) object);
 	}
 
 	/**
 	 * @return True if the state of the object has changed
 	 */
-	public boolean newState(Serializable object) {
+	public boolean checkState(Serializable object) {
 		boolean changed = false;
 
 		String newState = null;
