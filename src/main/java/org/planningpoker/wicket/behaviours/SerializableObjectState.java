@@ -25,7 +25,7 @@ public final class SerializableObjectState implements IObjectState {
 	/**
 	 * @return True if the state of the object has changed
 	 */
-	public boolean checkState(Serializable object) {
+	private boolean checkState(Serializable object) {
 		boolean changed = false;
 
 		String newState = null;
@@ -44,10 +44,6 @@ public final class SerializableObjectState implements IObjectState {
 		state = newState;
 
 		return changed;
-	}
-
-	public void reset() {
-		state = null;
 	}
 
 	private String createStateObject(Serializable object) {

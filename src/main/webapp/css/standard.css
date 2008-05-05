@@ -17,20 +17,26 @@ body{
 	background: url(../images/flag_green.png) no-repeat center center;
 }
 
-.participantStatusMedium {
+.participantStatusIll {
 	width: 16px;
 	height: 16px;
 	background: url(../images/flag_yellow.png) no-repeat center center;
 }
 
-.participantStatusWarning {
+.participantStatusSick {
 	width: 16px;
 	height: 16px;
 	background: url(../images/flag_orange.png) no-repeat center center;
 }
 
-.participantStatusProblem {
+.participantStatusDying {
 	width: 16px;
 	height: 16px;
 	background: url(../images/flag_red.png) no-repeat center center;
+}
+
+.participantStatusDead {
+	width: 16px;
+	height: 16px;
+	background: url(../images/exclamation.png) no-repeat center center;
 }

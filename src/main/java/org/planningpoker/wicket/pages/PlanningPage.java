@@ -32,7 +32,7 @@ public class PlanningPage extends BasePage {
 				PlanningPokerApplication.get().getHomePage());
 	}
 
-	public PlanningPage(PlanningSession planningSession) {
+	public PlanningPage(final PlanningSession planningSession) {
 		if (planningSession == null) {
 			throw new RestartResponseAtInterceptPageException(
 					PlanningPokerApplication.get().getHomePage());
@@ -79,7 +79,29 @@ public class PlanningPage extends BasePage {
 
 		planningTable = new PlanningTable("planningTable",
 				new Model<PlanningSession>(planningSession));
-		updatingBehavior.add(planningTable);
+		updatingBehavior.add(planningTable, new IUpdatingComponent() {
+			private static final long serialVersionUID = 1L;
+
+			public Object getStateObject(Component<?> component) {
+				StringBuilder state = new StringBuilder();
+				for (Participant participant : planningSession
+						.getParticipants()) {
+					state.append(participant.getName());
+					state.append(participant.getHealth());
+
+					PlanningRound currentPlanningRound = planningSession
+							.getCurrentPlanningRound();
+					if (currentPlanningRound != null) {
+						state.append(currentPlanningRound.getCard(participant));
+					}
+				}
+				return state;
+			}
+
+			public boolean isEnabled(Component<?> component) {
+				return true;
+			}
+		});
 		add(planningTable);
 
 		deckPanel = new DeckPanel("deckPanel", planningRoundModel) {

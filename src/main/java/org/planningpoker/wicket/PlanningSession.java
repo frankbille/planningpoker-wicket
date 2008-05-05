@@ -66,6 +66,12 @@ public class PlanningSession implements Serializable {
 		}
 	}
 
+	public void remove(Participant participant) {
+		synchronized (participants) {
+			participants.remove(participant);
+		}
+	}
+
 	public List<Participant> getParticipants() {
 		return Collections.unmodifiableList(participants);
 	}

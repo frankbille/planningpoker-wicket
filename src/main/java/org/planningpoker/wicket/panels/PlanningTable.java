@@ -3,6 +3,8 @@ package org.planningpoker.wicket.panels;
 import java.util.List;
 
 import org.apache.wicket.AttributeModifier;
+import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.image.Image;
@@ -17,7 +19,9 @@ import org.planningpoker.domain.ICard;
 import org.planningpoker.wicket.Participant;
 import org.planningpoker.wicket.PlanningRound;
 import org.planningpoker.wicket.PlanningSession;
+import org.planningpoker.wicket.Participant.Health;
 import org.planningpoker.wicket.PlanningSession.Status;
+import org.planningpoker.wicket.behaviours.ClickConfirmBehavior;
 import org.planningpoker.wicket.cardimage.CardImageResourceReference;
 
 public class PlanningTable extends Panel<PlanningSession> {
@@ -60,19 +64,20 @@ public class PlanningTable extends Panel<PlanningSession> {
 					@Override
 					public String getObject() {
 						Participant participant = item.getModelObject();
-						long millisSinceLastPing = participant
-								.getMillisSinceLastPing();
+						Health health = participant.getHealth();
 
 						String cssClass = null;
 
-						if (millisSinceLastPing <= 2000) {
+						if (health == Health.GOOD) {
 							cssClass = "participantStatusGood";
-						} else if (millisSinceLastPing <= 6000) {
-							cssClass = "participantStatusMedium";
-						} else if (millisSinceLastPing <= 10000) {
-							cssClass = "participantStatusWarning";
+						} else if (health == Health.ILL) {
+							cssClass = "participantStatusIll";
+						} else if (health == Health.SICK) {
+							cssClass = "participantStatusSick";
+						} else if (health == Health.DYING) {
+							cssClass = "participantStatusDying";
 						} else {
-							cssClass = "participantStatusProblem";
+							cssClass = "participantStatusDead";
 						}
 
 						return cssClass;
@@ -109,6 +114,32 @@ public class PlanningTable extends Panel<PlanningSession> {
 				};
 				item.add(new Image<CardImageResourceReference>("card",
 						cardModel));
+
+				// Remove link
+				AjaxLink<Participant> removeLink = new AjaxLink<Participant>(
+						"removeLink", item.getModel()) {
+					private static final long serialVersionUID = 1L;
+
+					@Override
+					public void onClick(AjaxRequestTarget target) {
+						PlanningSession planningSession = PlanningTable.this
+								.getModelObject();
+						planningSession.remove(getModelObject());
+						target.addComponent(PlanningTable.this);
+					}
+
+					@Override
+					public boolean isVisible() {
+						return PlanningTable.this.getModelObject().isOwner()
+								&& PlanningTable.this.getModelObject()
+										.getParticipant().equals(
+												getModelObject()) == false;
+					}
+				};
+				removeLink.add(new ClickConfirmBehavior(
+						new StringResourceModel("confirmRemoveParticipant",
+								this, item.getModel())));
+				item.add(removeLink);
 			}
 		});
 	}
