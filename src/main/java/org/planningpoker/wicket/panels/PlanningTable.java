@@ -7,7 +7,6 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.image.Image;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.panel.Panel;
@@ -20,9 +19,8 @@ import org.planningpoker.wicket.Participant;
 import org.planningpoker.wicket.PlanningRound;
 import org.planningpoker.wicket.PlanningSession;
 import org.planningpoker.wicket.Participant.Health;
-import org.planningpoker.wicket.PlanningSession.Status;
+import org.planningpoker.wicket.PlanningSession.ParticipantStatus;
 import org.planningpoker.wicket.behaviours.ClickConfirmBehavior;
-import org.planningpoker.wicket.cardimage.CardImageResourceReference;
 
 public class PlanningTable extends Panel<PlanningSession> {
 	private static final long serialVersionUID = 1L;
@@ -42,11 +40,11 @@ public class PlanningTable extends Panel<PlanningSession> {
 						item.getModel(), "name")));
 
 				// Status
-				AbstractReadOnlyModel<Status> statusModel = new AbstractReadOnlyModel<Status>() {
+				AbstractReadOnlyModel<ParticipantStatus> statusModel = new AbstractReadOnlyModel<ParticipantStatus>() {
 					private static final long serialVersionUID = 1L;
 
 					@Override
-					public Status getObject() {
+					public ParticipantStatus getObject() {
 						PlanningSession planningSession = PlanningTable.this
 								.getModelObject();
 						return planningSession.getParticipantStatus(item
@@ -87,11 +85,11 @@ public class PlanningTable extends Panel<PlanningSession> {
 						cssClassModel));
 				item.add(pingComponent);
 
-				IModel<CardImageResourceReference> cardModel = new AbstractReadOnlyModel<CardImageResourceReference>() {
+				IModel<String> cardModel = new AbstractReadOnlyModel<String>() {
 					private static final long serialVersionUID = 1L;
 
 					@Override
-					public CardImageResourceReference getObject() {
+					public String getObject() {
 						PlanningSession planningSession = PlanningTable.this
 								.getModelObject();
 						PlanningRound currentPlanningTurn = planningSession
@@ -103,17 +101,44 @@ public class PlanningTable extends Panel<PlanningSession> {
 										|| planningSession.getParticipant() == participant) {
 									ICard card = currentPlanningTurn
 											.getCard(participant);
-									return new CardImageResourceReference(0.5,
-											card);
+									return card.getDisplayValue();
 								}
 							}
 						}
 
-						return new CardImageResourceReference(0.5, null);
+						return "";
 					}
 				};
-				item.add(new Image<CardImageResourceReference>("card",
-						cardModel));
+				item.add(new Label<String>("card", cardModel));
+
+				// IModel<CardImageResourceReference> cardModel = new
+				// AbstractReadOnlyModel<CardImageResourceReference>() {
+				// private static final long serialVersionUID = 1L;
+				//
+				// @Override
+				// public CardImageResourceReference getObject() {
+				// PlanningSession planningSession = PlanningTable.this
+				// .getModelObject();
+				// PlanningRound currentPlanningTurn = planningSession
+				// .getCurrentPlanningRound();
+				// if (currentPlanningTurn != null) {
+				// Participant participant = item.getModelObject();
+				// if (currentPlanningTurn.hasChosedCard(participant)) {
+				// if (currentPlanningTurn.isComplete()
+				// || planningSession.getParticipant() == participant) {
+				// ICard card = currentPlanningTurn
+				// .getCard(participant);
+				// return new CardImageResourceReference(0.5,
+				// card);
+				// }
+				// }
+				// }
+				//
+				// return new CardImageResourceReference(0.5, null);
+				// }
+				// };
+				// item.add(new Image<CardImageResourceReference>("card",
+				// cardModel));
 
 				// Remove link
 				AjaxLink<Participant> removeLink = new AjaxLink<Participant>(

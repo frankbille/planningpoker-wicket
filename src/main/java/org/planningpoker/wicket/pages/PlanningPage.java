@@ -3,6 +3,8 @@ package org.planningpoker.wicket.pages;
 import org.apache.wicket.Component;
 import org.apache.wicket.RestartResponseAtInterceptPageException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.markup.html.IHeaderResponse;
+import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
@@ -13,8 +15,10 @@ import org.planningpoker.wicket.PlanningPokerApplication;
 import org.planningpoker.wicket.PlanningRound;
 import org.planningpoker.wicket.PlanningRoundResult;
 import org.planningpoker.wicket.PlanningSession;
+import org.planningpoker.wicket.PlanningSession.SessionStatus;
 import org.planningpoker.wicket.behaviours.AjaxCompoundUpdatingTimerBehavior;
 import org.planningpoker.wicket.behaviours.AjaxCompoundUpdatingTimerBehavior.IUpdatingComponent;
+import org.planningpoker.wicket.behaviours.AjaxCompoundUpdatingTimerBehavior.IUpdatingListener;
 import org.planningpoker.wicket.panels.AdministrationPanel;
 import org.planningpoker.wicket.panels.DeckPanel;
 import org.planningpoker.wicket.panels.PlanningRoundResultTable;
@@ -48,6 +52,14 @@ public class PlanningPage extends BasePage {
 					PlanningPokerApplication.get().getHomePage());
 		}
 
+		if (planningSession.getSessionStatus() == SessionStatus.TERMINATED) {
+			throw new RestartResponseAtInterceptPageException(
+					TerminatedPage.class);
+		}
+
+		// Title
+		add(new Label<String>("sessionTitle", planningSession.getTitle()));
+
 		// Updating queue behaviour
 		AjaxCompoundUpdatingTimerBehavior updatingBehavior = new AjaxCompoundUpdatingTimerBehavior(
 				Duration.ONE_SECOND);
@@ -57,6 +69,25 @@ public class PlanningPage extends BasePage {
 		Participant participant = planningSession.getParticipant();
 		updatingBehavior.add(participant);
 
+		// Redirect to terminated page if the session gets terminated
+		updatingBehavior.add(new IUpdatingListener() {
+			private static final long serialVersionUID = 1L;
+
+			public boolean isEnabled() {
+				return true;
+			}
+
+			public void onHeadRendered(IHeaderResponse response) {
+			}
+
+			public void onUpdated(AjaxRequestTarget target) {
+				if (planningSession.getSessionStatus() == SessionStatus.TERMINATED) {
+					getRequestCycle().setResponsePage(TerminatedPage.class);
+				}
+			}
+		});
+
+		// Planning round result
 		final IModel<PlanningRound> planningRoundModel = new PropertyModel<PlanningRound>(
 				planningSession, "currentPlanningRound");
 
@@ -68,12 +99,18 @@ public class PlanningPage extends BasePage {
 
 			@Override
 			public boolean isEnabled() {
+				return isVisible();
+			}
+
+			@Override
+			public boolean isVisible() {
 				PlanningRound planningRound = planningRoundModel.getObject();
 				boolean enabled = planningRound != null
 						&& planningRound.isComplete();
 				return enabled;
 			}
 		};
+		planningRoundResultTable.setOutputMarkupPlaceholderTag(true);
 		updatingBehavior.add(planningRoundResultTable);
 		add(planningRoundResultTable);
 

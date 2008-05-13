@@ -43,8 +43,10 @@ public class EnterNamePage extends BasePage {
 		};
 		add(form);
 
-		form.add(new TextField<String>("name", new PropertyModel<String>(this,
-				"name")));
+		TextField<String> nameField = new TextField<String>("name",
+				new PropertyModel<String>(this, "name"));
+		nameField.setRequired(true);
+		form.add(nameField);
 
 		form.add(new Button<String>("continue", new StringResourceModel(
 				"continue", this, null)));

@@ -1,16 +1,18 @@
 package org.planningpoker.wicket;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.apache.wicket.Page;
 import org.apache.wicket.Session;
 import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.request.target.coding.HybridUrlCodingStrategy;
+import org.planningpoker.wicket.PlanningSession.SessionStatus;
 import org.planningpoker.wicket.pages.EnterNamePage;
 import org.planningpoker.wicket.pages.FrontPage;
 import org.planningpoker.wicket.pages.PlanningPage;
+import org.planningpoker.wicket.pages.TerminatedPage;
 
 public class PlanningPokerApplication extends WebApplication {
 
@@ -18,7 +20,7 @@ public class PlanningPokerApplication extends WebApplication {
 		return (PlanningPokerApplication) WebApplication.get();
 	}
 
-	private final List<PlanningSession> planningSessions = new ArrayList<PlanningSession>();
+	private final List<PlanningSession> planningSessions = new CopyOnWriteArrayList<PlanningSession>();
 
 	@Override
 	protected void init() {
@@ -26,6 +28,7 @@ public class PlanningPokerApplication extends WebApplication {
 				false));
 		mount(new HybridUrlCodingStrategy("/entername", EnterNamePage.class,
 				false));
+		mountBookmarkablePage("/terminated", TerminatedPage.class);
 	}
 
 	@Override
@@ -51,16 +54,22 @@ public class PlanningPokerApplication extends WebApplication {
 
 	public PlanningSession createNewPlanningSession(String title,
 			String password, String ownerName, Session ownerSession) {
-		synchronized (planningSessions) {
-			PlanningSession planningSession = new PlanningSession(title,
-					password, ownerName, ownerSession);
-			planningSessions.add(planningSession);
-			return planningSession;
-		}
+		PlanningSession planningSession = new PlanningSession(title, password,
+				ownerName, ownerSession);
+		planningSessions.add(planningSession);
+		return planningSession;
 	}
 
-	public List<PlanningSession> getPlanningSessions() {
-		return Collections.unmodifiableList(planningSessions);
+	public List<PlanningSession> getAvailablePlanningSessions() {
+		List<PlanningSession> filteredPlanningSessions = new ArrayList<PlanningSession>();
+
+		for (PlanningSession planningSession : planningSessions) {
+			if (planningSession.getSessionStatus() == SessionStatus.SETTING_UP) {
+				filteredPlanningSessions.add(planningSession);
+			}
+		}
+
+		return filteredPlanningSessions;
 	}
 
 }

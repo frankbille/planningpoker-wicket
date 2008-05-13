@@ -61,7 +61,7 @@ public class FrontPage extends BasePage {
 
 			@Override
 			protected List<PlanningSession> load() {
-				return PlanningPokerApplication.get().getPlanningSessions();
+				return PlanningPokerApplication.get().getAvailablePlanningSessions();
 			}
 		};
 
