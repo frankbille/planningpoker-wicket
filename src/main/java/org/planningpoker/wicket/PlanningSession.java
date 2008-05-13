@@ -57,6 +57,9 @@ public class PlanningSession implements Serializable {
 		UNKNOWN
 	}
 
+	/**
+	 * The status of the planning session
+	 */
 	public static enum SessionStatus {
 		/**
 		 * The session hasn't started yet.
@@ -258,6 +261,17 @@ public class PlanningSession implements Serializable {
 	}
 
 	/**
+	 * Check if the participant if participating in the planning session
+	 * 
+	 * @param participant
+	 *            The participant to check
+	 * @return True if the participant if participating
+	 */
+	public boolean isParticipating(Participant participant) {
+		return participants.contains(participant);
+	}
+
+	/**
 	 * Get the participant which is associated with the Wicket {@link Session}
 	 * on the current thread local: {@link Session#get()}.
 	 * 
@@ -290,6 +304,50 @@ public class PlanningSession implements Serializable {
 		}
 
 		return participant;
+	}
+
+	/**
+	 * Check if the participant associated with the current Wicket
+	 * {@link Session} has the dealer role.
+	 * 
+	 * @return True if the participant associated with the current Wicket
+	 *         {@link Session} has the dealer role.
+	 */
+	public boolean isDealer() {
+		return isOwner();
+	}
+
+	/**
+	 * Check if the participant has the dealer role.
+	 * 
+	 * @param participant
+	 *            The participant to check
+	 * @return True if the participant has the dealer role.
+	 */
+	public boolean isDealer(Participant participant) {
+		return isOwner(participant);
+	}
+
+	/**
+	 * Check if the participant associated with the current Wicket
+	 * {@link Session} has the player role.
+	 * 
+	 * @return True if the participant associated with the current Wicket
+	 *         {@link Session} has the player role.
+	 */
+	public boolean isPlayer() {
+		return isParticipating();
+	}
+
+	/**
+	 * Check if the participant has the player role.
+	 * 
+	 * @param participant
+	 *            The participant to check
+	 * @return True if the participant has the player role.
+	 */
+	public boolean isPlayer(Participant participant) {
+		return isParticipating(participant);
 	}
 
 	/**
@@ -342,17 +400,26 @@ public class PlanningSession implements Serializable {
 		return currentRound;
 	}
 
+	/**
+	 * Create a new planning round. Only the dealer may do that.
+	 * 
+	 * @return The new planning round
+	 */
 	public PlanningRound createNewRound() {
 		return createNewRound(getParticipant());
 	}
 
 	/**
+	 * Create a new planning round. Only the dealer may do that.
 	 * 
-	 * @return
+	 * @param participant
+	 *            The participant which wants to create a new round. Only the
+	 *            dealer may do that
+	 * @return The new planning round
 	 */
 	public synchronized PlanningRound createNewRound(Participant participant) {
 		// Only the owner may do this
-		if (isOwner(participant) == false) {
+		if (isDealer(participant) == false) {
 			throw new IllegalArgumentException(
 					"Only the owner may create a new round");
 		}
@@ -368,6 +435,13 @@ public class PlanningSession implements Serializable {
 		return currentRound;
 	}
 
+	/**
+	 * Get the current status of the given participant.
+	 * 
+	 * @param participant
+	 *            The participant to get the status for.
+	 * @return The status of the participant.
+	 */
 	public ParticipantStatus getParticipantStatus(Participant participant) {
 		ParticipantStatus status = null;
 
@@ -384,6 +458,11 @@ public class PlanningSession implements Serializable {
 		return status;
 	}
 
+	/**
+	 * Get the current session status.
+	 * 
+	 * @return The current session status.
+	 */
 	public SessionStatus getSessionStatus() {
 		if (terminated == false) {
 			if (currentRound != null) {
@@ -396,7 +475,25 @@ public class PlanningSession implements Serializable {
 		}
 	}
 
+	/**
+	 * Terminate the planning session. This can only be done by the dealer.
+	 */
 	public void terminate() {
+		terminate(getParticipant());
+	}
+
+	/**
+	 * Terminate the planning session. This can only be done by the dealer.
+	 * 
+	 * @param participant
+	 *            The participant who wants to terminate the session.
+	 */
+	public void terminate(Participant participant) {
+		if (isDealer(participant) == false) {
+			throw new IllegalArgumentException(
+					"Only the dealer may terminate the planning session.");
+		}
+
 		terminated = true;
 	}
 

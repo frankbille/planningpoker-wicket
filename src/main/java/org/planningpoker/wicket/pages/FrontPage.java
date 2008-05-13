@@ -19,7 +19,7 @@ import org.apache.wicket.model.StringResourceModel;
 import org.apache.wicket.util.time.Duration;
 import org.planningpoker.wicket.PlanningPokerApplication;
 import org.planningpoker.wicket.PlanningSession;
-import org.planningpoker.wicket.behaviours.AjaxSelfUpdatingTimerBehavior;
+import org.planningpoker.wicket.behaviours.ajax.timer.AjaxSelfUpdatingTimerBehavior;
 
 public class FrontPage extends BasePage {
 

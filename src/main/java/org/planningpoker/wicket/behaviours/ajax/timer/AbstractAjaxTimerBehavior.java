@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.planningpoker.wicket.behaviours;
+package org.planningpoker.wicket.behaviours.ajax.timer;
 
 import org.apache.wicket.Page;
 import org.apache.wicket.RequestCycle;
@@ -97,6 +97,7 @@ public abstract class AbstractAjaxTimerBehavior extends
 	}
 
 	protected void onHeadRendered(IHeaderResponse response) {
+		// Override to contribute to the header.
 	}
 
 	/**

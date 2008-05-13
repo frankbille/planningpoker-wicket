@@ -1,4 +1,4 @@
-package org.planningpoker.wicket.behaviours;
+package org.planningpoker.wicket.behaviours.ajax.timer;
 
 import java.io.Serializable;
 

@@ -3,7 +3,7 @@ package org.planningpoker.wicket;
 import java.util.Date;
 
 import org.apache.wicket.Session;
-import org.planningpoker.wicket.behaviours.AjaxCompoundUpdatingTimerBehavior.IHeartBeat;
+import org.planningpoker.wicket.behaviours.ajax.timer.compound.IHeartBeat;
 
 public class Participant implements IHeartBeat {
 	private static final long serialVersionUID = 1L;
@@ -23,7 +23,7 @@ public class Participant implements IHeartBeat {
 	public Participant(String name, Session session) {
 		this.name = name;
 		this.session = session;
-		ping();
+		beat();
 	}
 
 	public String getName() {
@@ -72,7 +72,7 @@ public class Participant implements IHeartBeat {
 		return new Date().getTime() - lastPing.getTime();
 	}
 
-	public void ping() {
+	public void beat() {
 		this.lastPing = new Date();
 	}
 }

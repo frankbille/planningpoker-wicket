@@ -16,9 +16,11 @@ import org.planningpoker.wicket.PlanningRound;
 import org.planningpoker.wicket.PlanningRoundResult;
 import org.planningpoker.wicket.PlanningSession;
 import org.planningpoker.wicket.PlanningSession.SessionStatus;
-import org.planningpoker.wicket.behaviours.AjaxCompoundUpdatingTimerBehavior;
-import org.planningpoker.wicket.behaviours.AjaxCompoundUpdatingTimerBehavior.IUpdatingComponent;
-import org.planningpoker.wicket.behaviours.AjaxCompoundUpdatingTimerBehavior.IUpdatingListener;
+import org.planningpoker.wicket.behaviours.ajax.timer.compound.AjaxCompoundUpdatingTimerBehavior;
+import org.planningpoker.wicket.behaviours.ajax.timer.compound.ComponentUpdatingListener;
+import org.planningpoker.wicket.behaviours.ajax.timer.compound.HeartBeatUpdatingListener;
+import org.planningpoker.wicket.behaviours.ajax.timer.compound.IUpdatingComponent;
+import org.planningpoker.wicket.behaviours.ajax.timer.compound.AjaxCompoundUpdatingTimerBehavior.IUpdatingListener;
 import org.planningpoker.wicket.panels.AdministrationPanel;
 import org.planningpoker.wicket.panels.DeckPanel;
 import org.planningpoker.wicket.panels.PlanningRoundResultTable;
@@ -67,15 +69,11 @@ public class PlanningPage extends BasePage {
 
 		// Get participant so he can get a heartbeat.
 		Participant participant = planningSession.getParticipant();
-		updatingBehavior.add(participant);
+		updatingBehavior.add(new HeartBeatUpdatingListener(participant));
 
 		// Redirect to terminated page if the session gets terminated
 		updatingBehavior.add(new IUpdatingListener() {
 			private static final long serialVersionUID = 1L;
-
-			public boolean isEnabled() {
-				return true;
-			}
 
 			public void onHeadRendered(IHeaderResponse response) {
 			}
@@ -111,34 +109,33 @@ public class PlanningPage extends BasePage {
 			}
 		};
 		planningRoundResultTable.setOutputMarkupPlaceholderTag(true);
-		updatingBehavior.add(planningRoundResultTable);
+		updatingBehavior.add(new ComponentUpdatingListener(
+				planningRoundResultTable));
 		add(planningRoundResultTable);
 
 		planningTable = new PlanningTable("planningTable",
 				new Model<PlanningSession>(planningSession));
-		updatingBehavior.add(planningTable, new IUpdatingComponent() {
-			private static final long serialVersionUID = 1L;
+		updatingBehavior.add(new ComponentUpdatingListener(planningTable,
+				new IUpdatingComponent() {
+					private static final long serialVersionUID = 1L;
 
-			public Object getStateObject(Component<?> component) {
-				StringBuilder state = new StringBuilder();
-				for (Participant participant : planningSession
-						.getParticipants()) {
-					state.append(participant.getName());
-					state.append(participant.getHealth());
+					public Object getStateObject(Component<?> component) {
+						StringBuilder state = new StringBuilder();
+						for (Participant participant : planningSession
+								.getParticipants()) {
+							state.append(participant.getName());
+							state.append(participant.getHealth());
 
-					PlanningRound currentPlanningRound = planningSession
-							.getCurrentPlanningRound();
-					if (currentPlanningRound != null) {
-						state.append(currentPlanningRound.getCard(participant));
+							PlanningRound currentPlanningRound = planningSession
+									.getCurrentPlanningRound();
+							if (currentPlanningRound != null) {
+								state.append(currentPlanningRound
+										.getCard(participant));
+							}
+						}
+						return state;
 					}
-				}
-				return state;
-			}
-
-			public boolean isEnabled(Component<?> component) {
-				return true;
-			}
-		});
+				}));
 		add(planningTable);
 
 		deckPanel = new DeckPanel("deckPanel", planningRoundModel) {
@@ -151,17 +148,18 @@ public class PlanningPage extends BasePage {
 				target.addComponent(administrationPanel);
 			}
 		};
-		updatingBehavior.add(deckPanel, new IUpdatingComponent() {
-			private static final long serialVersionUID = 1L;
+		updatingBehavior.add(new ComponentUpdatingListener(deckPanel,
+				new IUpdatingComponent() {
+					private static final long serialVersionUID = 1L;
 
-			public Object getStateObject(Component<?> component) {
-				return deckPanel.isEnabled();
-			}
+					public Object getStateObject(Component<?> component) {
+						return deckPanel.isEnabled();
+					}
 
-			public boolean isEnabled(Component<?> component) {
-				return true;
-			}
-		});
+					public boolean isEnabled(Component<?> component) {
+						return true;
+					}
+				}));
 		add(deckPanel);
 
 		administrationPanel = new AdministrationPanel("administrationPanel",
@@ -175,22 +173,19 @@ public class PlanningPage extends BasePage {
 				target.addComponent(planningRoundResultTable);
 			}
 		};
-		updatingBehavior.add(administrationPanel, new IUpdatingComponent() {
-			private static final long serialVersionUID = 1L;
+		updatingBehavior.add(new ComponentUpdatingListener(administrationPanel,
+				new IUpdatingComponent() {
+					private static final long serialVersionUID = 1L;
 
-			public boolean isEnabled(Component<?> component) {
-				PlanningSession modelObject = (PlanningSession) component
-						.getModelObject();
-				PlanningRound currentPlanningRound = modelObject
-						.getCurrentPlanningRound();
-				return modelObject.isStarted()
-						&& currentPlanningRound.isComplete() == false;
-			}
-
-			public Object getStateObject(Component<?> component) {
-				return isEnabled(component);
-			}
-		});
+					public Object getStateObject(Component<?> component) {
+						PlanningSession modelObject = (PlanningSession) component
+								.getModelObject();
+						PlanningRound currentPlanningRound = modelObject
+								.getCurrentPlanningRound();
+						return modelObject.isStarted()
+								&& currentPlanningRound.isComplete() == false;
+					}
+				}));
 		add(administrationPanel);
 
 	}
