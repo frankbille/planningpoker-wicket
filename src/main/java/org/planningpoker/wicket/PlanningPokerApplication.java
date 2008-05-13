@@ -32,7 +32,7 @@ public class PlanningPokerApplication extends WebApplication {
 	}
 
 	@Override
-	public Class<? extends Page> getHomePage() {
+	public Class<? extends Page<?>> getHomePage() {
 		return FrontPage.class;
 	}
 

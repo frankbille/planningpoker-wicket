@@ -5,7 +5,7 @@ import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.StringResourceModel;
 
-public class TerminatedPage extends BasePage {
+public class TerminatedPage extends BasePage<Void> {
 
 	public TerminatedPage() {
 		add(new BookmarkablePageLink("homepageLink", Application.get()

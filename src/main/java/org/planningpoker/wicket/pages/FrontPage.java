@@ -21,7 +21,7 @@ import org.planningpoker.wicket.PlanningPokerApplication;
 import org.planningpoker.wicket.PlanningSession;
 import org.planningpoker.wicket.behaviours.ajax.timer.AjaxSelfUpdatingTimerBehavior;
 
-public class FrontPage extends BasePage {
+public class FrontPage extends BasePage<Void> {
 
 	private static class NewSession implements Serializable {
 		private static final long serialVersionUID = 1L;
@@ -61,7 +61,8 @@ public class FrontPage extends BasePage {
 
 			@Override
 			protected List<PlanningSession> load() {
-				return PlanningPokerApplication.get().getAvailablePlanningSessions();
+				return PlanningPokerApplication.get()
+						.getAvailablePlanningSessions();
 			}
 		};
 

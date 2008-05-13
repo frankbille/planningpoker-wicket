@@ -5,16 +5,17 @@ import org.apache.wicket.markup.html.form.Button;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.StringResourceModel;
 import org.planningpoker.wicket.PlanningPokerApplication;
 import org.planningpoker.wicket.PlanningSession;
 
-public class EnterNamePage extends BasePage {
+public class EnterNamePage extends BasePage<Void> {
 
 	private String name;
 
-	public EnterNamePage(final PlanningSession planningSession) {
+	public EnterNamePage(PlanningSession planningSession) {
 		if (planningSession == null) {
 			throw new RestartResponseAtInterceptPageException(
 					PlanningPokerApplication.get().getHomePage());
@@ -30,15 +31,16 @@ public class EnterNamePage extends BasePage {
 					PlanningPokerApplication.get().getHomePage());
 		}
 
-		Form<Object> form = new Form<Object>("form") {
+		Form<PlanningSession> form = new Form<PlanningSession>("form",
+				new Model<PlanningSession>(planningSession)) {
 			private static final long serialVersionUID = 1L;
 
 			@Override
 			protected void onSubmit() {
-				planningSession.addParticipant(name);
+				getModelObject().addParticipant(name);
 
 				getRequestCycle().setResponsePage(
-						new PlanningPage(planningSession));
+						new PlanningPage(getModelObject()));
 			}
 		};
 		add(form);

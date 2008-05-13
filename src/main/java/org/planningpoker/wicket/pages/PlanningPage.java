@@ -26,7 +26,7 @@ import org.planningpoker.wicket.panels.DeckPanel;
 import org.planningpoker.wicket.panels.PlanningRoundResultTable;
 import org.planningpoker.wicket.panels.PlanningTable;
 
-public class PlanningPage extends BasePage {
+public class PlanningPage extends BasePage<PlanningSession> {
 
 	private AdministrationPanel administrationPanel;
 	private DeckPanel deckPanel;
@@ -38,7 +38,7 @@ public class PlanningPage extends BasePage {
 				PlanningPokerApplication.get().getHomePage());
 	}
 
-	public PlanningPage(final PlanningSession planningSession) {
+	public PlanningPage(PlanningSession planningSession) {
 		if (planningSession == null) {
 			throw new RestartResponseAtInterceptPageException(
 					PlanningPokerApplication.get().getHomePage());
@@ -58,6 +58,8 @@ public class PlanningPage extends BasePage {
 			throw new RestartResponseAtInterceptPageException(
 					TerminatedPage.class);
 		}
+
+		setModel(new Model<PlanningSession>(planningSession));
 
 		// Title
 		add(new Label<String>("sessionTitle", planningSession.getTitle()));
@@ -79,7 +81,7 @@ public class PlanningPage extends BasePage {
 			}
 
 			public void onUpdated(AjaxRequestTarget target) {
-				if (planningSession.getSessionStatus() == SessionStatus.TERMINATED) {
+				if (getModelObject().getSessionStatus() == SessionStatus.TERMINATED) {
 					getRequestCycle().setResponsePage(TerminatedPage.class);
 				}
 			}
@@ -121,12 +123,12 @@ public class PlanningPage extends BasePage {
 
 					public Object getStateObject(Component<?> component) {
 						StringBuilder state = new StringBuilder();
-						for (Participant participant : planningSession
+						for (Participant participant : getModelObject()
 								.getParticipants()) {
 							state.append(participant.getName());
 							state.append(participant.getHealth());
 
-							PlanningRound currentPlanningRound = planningSession
+							PlanningRound currentPlanningRound = getModelObject()
 									.getCurrentPlanningRound();
 							if (currentPlanningRound != null) {
 								state.append(currentPlanningRound
@@ -154,10 +156,6 @@ public class PlanningPage extends BasePage {
 
 					public Object getStateObject(Component<?> component) {
 						return deckPanel.isEnabled();
-					}
-
-					public boolean isEnabled(Component<?> component) {
-						return true;
 					}
 				}));
 		add(deckPanel);

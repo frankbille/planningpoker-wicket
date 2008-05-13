@@ -26,7 +26,9 @@ public class TestPlanningRound {
 		session.addParticipant("P2", ses2);
 		session.addParticipant("P3", ses3);
 
-		PlanningRound round = session.createNewRound();
+		Participant owner = session.getParticipant(ses1);
+
+		PlanningRound round = session.createNewRound(owner);
 		List<ICard> cards = round.getDeck().createDeck();
 		ICard selectedCard1 = cards.get(1);
 		ICard selectedCard2 = cards.get(2);
