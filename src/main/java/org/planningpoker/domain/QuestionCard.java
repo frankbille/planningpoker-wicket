@@ -1,5 +1,8 @@
 package org.planningpoker.domain;
 
+/**
+ * Card representing a question value.
+ */
 public class QuestionCard implements ICard {
 	private static final long serialVersionUID = 1L;
 

@@ -57,7 +57,7 @@ public class AdministrationPanel extends Panel<PlanningSession> {
 				PlanningRound currentPlanningRound = modelObject
 						.getCurrentPlanningRound();
 				return modelObject.isStarted()
-						&& currentPlanningRound.isComplete();
+						&& currentPlanningRound.isFinished();
 			}
 		});
 

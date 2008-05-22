@@ -48,15 +48,15 @@ public class ComponentUpdatingListener implements IUpdatingListener {
 	private final Component<?> component;
 	private final UpdatingComponentState updatingComponentState;
 
-	public ComponentUpdatingListener(Component<?> component) {
-		this(component, new IUpdatingComponent() {
+	public <T extends Component<?>> ComponentUpdatingListener(T component) {
+		this(component, new IUpdatingComponent<T>() {
 			private static final long serialVersionUID = 1L;
 
-			public boolean isEnabled(Component<?> component) {
+			public boolean isEnabled(T component) {
 				return true;
 			}
 
-			public Object getStateObject(Component<?> component) {
+			public Object getStateObject(T component) {
 				return isEnabled(component) && component.isEnabled() ? component
 						.getModelObject()
 						: null;
@@ -64,8 +64,8 @@ public class ComponentUpdatingListener implements IUpdatingListener {
 		});
 	}
 
-	public ComponentUpdatingListener(Component<?> component,
-			IUpdatingComponent updatingComponent) {
+	public <T extends Component<?>> ComponentUpdatingListener(T component,
+			IUpdatingComponent<T> updatingComponent) {
 		this.component = component;
 		this.updatingComponentState = new UpdatingComponentState(
 				updatingComponent);

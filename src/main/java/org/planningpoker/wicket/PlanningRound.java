@@ -3,20 +3,37 @@ package org.planningpoker.wicket;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedHashMap;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.wicket.Session;
 import org.planningpoker.domain.ICard;
 import org.planningpoker.domain.IDeck;
 
+/**
+ * A planning round is the duration in which the players has to agree on an
+ * estimate for one given task. The round is started with all players is given a
+ * fresh deck of cards and ends a card is agreed upon for the given task.
+ */
 public class PlanningRound implements Serializable {
 	private static final long serialVersionUID = 1L;
 
-	private final Map<Participant, ICard> participantCards = new LinkedHashMap<Participant, ICard>();
+	private static class NullCard implements ICard {
+		public String getDisplayValue() {
+			return null;
+		}
+
+		public String getUrlValue() {
+			return null;
+		}
+	}
+
+	private final Map<Participant, ICard> participantCards = new ConcurrentHashMap<Participant, ICard>();
 	private final PlanningSession planningSession;
-	private PlanningRoundResult planningRoundResult;
+	private final Date timestamp = new Date();
+	private String title;
 
 	/**
 	 * Package protected because it should only be {@link PlanningSession} that
@@ -24,29 +41,75 @@ public class PlanningRound implements Serializable {
 	 */
 	PlanningRound(PlanningSession planningSession) {
 		for (Participant participant : planningSession.getParticipants()) {
-			participantCards.put(participant, null);
+			participantCards.put(participant, new NullCard());
 		}
 
 		this.planningSession = planningSession;
 	}
 
+	/**
+	 * @return Get the deck used in this round. The deck will be used by all
+	 *         players.
+	 */
 	public IDeck getDeck() {
 		return planningSession.getDeck();
 	}
 
-	public boolean isComplete() {
-		synchronized (participantCards) {
-			boolean complete = true;
+	/**
+	 * @return The time stamp for when this round was created.
+	 */
+	public Date getTimestamp() {
+		return timestamp;
+	}
 
+	/**
+	 * @return Get the planning session for this round.
+	 */
+	public PlanningSession getPlanningSession() {
+		return planningSession;
+	}
+
+	/**
+	 * @return True if all players have selected a card.
+	 */
+	public boolean isComplete() {
+		boolean complete = true;
+
+		for (Participant participant : participantCards.keySet()) {
+			if (hasChosedCard(participant) == false) {
+				complete = false;
+				break;
+			}
+		}
+
+		return complete;
+	}
+
+	/**
+	 * @return True if all players has selected the SAME card.
+	 */
+	public boolean isFinished() {
+		boolean finished = true;
+
+		if (isComplete() == false) {
+			finished = false;
+		} else {
+			ICard card = null;
 			for (Participant participant : participantCards.keySet()) {
-				if (hasChosedCard(participant) == false) {
-					complete = false;
+				if (card == null) {
+					card = getCard(participant);
+				}
+
+				if (getCard(participant).equals(card) == false) {
+					finished = false;
 					break;
 				}
-			}
 
-			return complete;
+				card = getCard(participant);
+			}
 		}
+
+		return finished;
 	}
 
 	public List<Participant> getParticipants() {
@@ -55,15 +118,11 @@ public class PlanningRound implements Serializable {
 	}
 
 	public boolean hasChosedCard(Participant participant) {
-		synchronized (participantCards) {
-			return participantCards.get(participant) != null;
-		}
+		return participantCards.get(participant) instanceof NullCard == false;
 	}
 
 	public ICard getCard(Participant participant) {
-		synchronized (participantCards) {
-			return participantCards.get(participant);
-		}
+		return participantCards.get(participant);
 	}
 
 	public void selectCard(ICard card) {
@@ -75,13 +134,17 @@ public class PlanningRound implements Serializable {
 	}
 
 	public void selectCard(ICard card, Participant participant) {
-		synchronized (participantCards) {
-			if (participantCards.containsKey(participant) == false) {
-				throw new IllegalArgumentException("Unknown participant: "
-						+ participant);
-			}
+		if (participantCards.containsKey(participant) == false) {
+			throw new IllegalArgumentException("Unknown participant: "
+					+ participant);
+		}
 
-			participantCards.put(participant, card);
+		participantCards.put(participant, card);
+	}
+
+	public void selectCardForAll(ICard card) {
+		for (Participant participant : participantCards.keySet()) {
+			selectCard(card, participant);
 		}
 	}
 
@@ -91,17 +154,32 @@ public class PlanningRound implements Serializable {
 					"Can't get the result until the round is complete.");
 		}
 
-		if (planningRoundResult == null) {
-			planningRoundResult = new PlanningRoundResult();
+		PlanningRoundResult planningRoundResult = new PlanningRoundResult(this);
 
-			for (Participant participant : participantCards.keySet()) {
-				ICard card = participantCards.get(participant);
-				planningRoundResult.addCard(card);
-			}
-
+		for (Participant participant : participantCards.keySet()) {
+			ICard card = participantCards.get(participant);
+			planningRoundResult.addCard(card);
 		}
 
 		return planningRoundResult;
+	}
+
+	public ICard getSelectedCard() {
+		ICard selectedCard = null;
+
+		if (isFinished()) {
+			selectedCard = participantCards.values().iterator().next();
+		}
+
+		return selectedCard;
+	}
+
+	public String getTitle() {
+		return title;
+	}
+
+	public void setTitle(String title) {
+		this.title = title;
 	}
 
 }

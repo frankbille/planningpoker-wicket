@@ -1,7 +1,9 @@
 package org.planningpoker.wicket;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Stack;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.apache.wicket.Session;
@@ -77,21 +79,19 @@ public class PlanningSession implements Serializable {
 
 	private final List<Participant> participants = new CopyOnWriteArrayList<Participant>();
 	private final Participant owner;
-	private PlanningRound currentRound;
+	private final Stack<PlanningRound> rounds = new Stack<PlanningRound>();
 	private final String title;
-	private final String password;
 	private final IDeck deck = new StandardDeck();
 	private boolean terminated = false;
 
 	/**
-	 * @see #PlanningSession(String, String, String, Session)
+	 * @see #PlanningSession(String, String, Session)
 	 * 
 	 * @param title
-	 * @param password
 	 * @param ownerName
 	 */
-	PlanningSession(String title, String password, String ownerName) {
-		this(title, password, ownerName, Session.get());
+	PlanningSession(String title, String ownerName) {
+		this(title, ownerName, Session.get());
 	}
 
 	/**
@@ -100,14 +100,11 @@ public class PlanningSession implements Serializable {
 	 * Only the {@link PlanningPokerApplication} should create new instances
 	 * 
 	 * @param title
-	 * @param password
 	 * @param ownerName
 	 * @param ownerSession
 	 */
-	PlanningSession(String title, String password, String ownerName,
-			Session ownerSession) {
+	PlanningSession(String title, String ownerName, Session ownerSession) {
 		this.title = title;
-		this.password = password;
 		owner = addParticipant(ownerName, ownerSession);
 	}
 
@@ -204,32 +201,6 @@ public class PlanningSession implements Serializable {
 	 */
 	public String getTitle() {
 		return title;
-	}
-
-	/**
-	 * @return True if the session is password protected.
-	 */
-	public boolean isPasswordProtected() {
-		return password != null;
-	}
-
-	/**
-	 * Verify that a password matches the password in this session.
-	 * 
-	 * @param password
-	 *            The password to verify
-	 * @return True if the passwords matches.
-	 */
-	public boolean verifyPassword(String password) {
-		boolean valid = false;
-
-		if (isPasswordProtected() == false) {
-			valid = true;
-		} else {
-			valid = this.password.equals(password);
-		}
-
-		return valid;
 	}
 
 	/**
@@ -397,7 +368,7 @@ public class PlanningSession implements Serializable {
 	 * @return The current planning round.
 	 */
 	public PlanningRound getCurrentPlanningRound() {
-		return currentRound;
+		return rounds.isEmpty() ? null : rounds.peek();
 	}
 
 	/**
@@ -424,15 +395,15 @@ public class PlanningSession implements Serializable {
 					"Only the owner may create a new round");
 		}
 
-		if (currentRound == null) {
+		if (getCurrentPlanningRound() == null) {
 			createRound();
 		} else {
-			if (currentRound.isComplete()) {
+			if (getCurrentPlanningRound().isComplete()) {
 				createRound();
 			}
 		}
 
-		return currentRound;
+		return getCurrentPlanningRound();
 	}
 
 	/**
@@ -445,14 +416,22 @@ public class PlanningSession implements Serializable {
 	public ParticipantStatus getParticipantStatus(Participant participant) {
 		ParticipantStatus status = null;
 
-		if (isStarted() == false) {
-			status = ParticipantStatus.WAITING_FOR_SESSION_TO_START;
-		} else {
-			if (currentRound.hasChosedCard(participant)) {
-				status = ParticipantStatus.CARD_CHOSEN;
-			} else {
-				status = ParticipantStatus.DECIDING;
+		if (isParticipating(participant)) {
+			SessionStatus sessionStatus = getSessionStatus();
+
+			if (sessionStatus == SessionStatus.SETTING_UP) {
+				status = ParticipantStatus.WAITING_FOR_SESSION_TO_START;
+			} else if (sessionStatus == SessionStatus.STARTED) {
+				if (getCurrentPlanningRound().hasChosedCard(participant)) {
+					status = ParticipantStatus.CARD_CHOSEN;
+				} else {
+					status = ParticipantStatus.DECIDING;
+				}
+			} else if (sessionStatus == SessionStatus.TERMINATED) {
+				status = ParticipantStatus.TERMINATED;
 			}
+		} else {
+			status = ParticipantStatus.UNKNOWN;
 		}
 
 		return status;
@@ -465,7 +444,7 @@ public class PlanningSession implements Serializable {
 	 */
 	public SessionStatus getSessionStatus() {
 		if (terminated == false) {
-			if (currentRound != null) {
+			if (getCurrentPlanningRound() != null) {
 				return SessionStatus.STARTED;
 			} else {
 				return SessionStatus.SETTING_UP;
@@ -497,7 +476,24 @@ public class PlanningSession implements Serializable {
 		terminated = true;
 	}
 
+	/**
+	 * Get the previous finished rounds.
+	 * 
+	 * @return The previous finished rounds.
+	 */
+	public List<PlanningRound> getPreviousRounds() {
+		List<PlanningRound> previousRounds = new ArrayList<PlanningRound>();
+
+		previousRounds.addAll(rounds);
+		// Remove the last entry, because it's the current round
+		if (previousRounds.size() > 0) {
+			previousRounds.remove(previousRounds.size() - 1);
+		}
+
+		return previousRounds;
+	}
+
 	private void createRound() {
-		currentRound = new PlanningRound(this);
+		rounds.push(new PlanningRound(this));
 	}
 }

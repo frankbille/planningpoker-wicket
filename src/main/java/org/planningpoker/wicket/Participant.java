@@ -5,6 +5,10 @@ import java.util.Date;
 import org.apache.wicket.Session;
 import org.planningpoker.wicket.behaviours.ajax.timer.compound.IHeartBeat;
 
+/**
+ * Participant in a specific planning session. A participant has a heartbeat
+ * which beats based on the health of it's client browser.
+ */
 public class Participant implements IHeartBeat {
 	private static final long serialVersionUID = 1L;
 
@@ -13,23 +17,62 @@ public class Participant implements IHeartBeat {
 	 * was registered. If it's too long ago, then Health degrades.
 	 */
 	public static enum Health {
-		GOOD, ILL, SICK, DYING, DEAD
+		/**
+		 * Good health
+		 */
+		GOOD,
+		/**
+		 * Ill
+		 */
+		ILL,
+		/**
+		 * Sick
+		 */
+		SICK,
+		/**
+		 * Almost out of contact
+		 */
+		DYING,
+		/**
+		 * Out of reach
+		 */
+		DEAD
 	}
 
 	private final String name;
 	private final Session session;
 	private transient Date lastPing;
 
-	public Participant(String name, Session session) {
+	/**
+	 * Create a new participant. A participant must be associated with the
+	 * Wicket {@link Session}, that the user has.
+	 * 
+	 * @param name
+	 *            The name of the participant
+	 * @param session
+	 *            The Wicket {@link Session} associated with the user that will
+	 *            be represented by the participant.
+	 */
+	Participant(String name, Session session) {
 		this.name = name;
 		this.session = session;
 		beat();
 	}
 
+	/**
+	 * Get the name of the participant.
+	 * 
+	 * @return The name of the participant.
+	 */
 	public String getName() {
 		return name;
 	}
 
+	/**
+	 * Get the Wicket {@link Session}.
+	 * 
+	 * @return The Wicket {@link Session}.
+	 */
 	public Session getSession() {
 		return session;
 	}
@@ -52,6 +95,12 @@ public class Participant implements IHeartBeat {
 		return equals;
 	}
 
+	/**
+	 * Get the health of the participant. This is measured from when the last
+	 * heart beat was registered. If it's too long ago, then Health degrades.
+	 * 
+	 * @return The health of the participant.
+	 */
 	public Health getHealth() {
 		long millisSinceLastPing = getMillisSinceLastPing();
 
@@ -69,6 +118,10 @@ public class Participant implements IHeartBeat {
 	}
 
 	private long getMillisSinceLastPing() {
+		if (lastPing == null) {
+			beat();
+		}
+
 		return new Date().getTime() - lastPing.getTime();
 	}
 

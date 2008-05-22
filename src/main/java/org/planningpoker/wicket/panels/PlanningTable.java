@@ -28,16 +28,40 @@ public class PlanningTable extends Panel<PlanningSession> {
 	public PlanningTable(String id, IModel<PlanningSession> model) {
 		super(id, model);
 
-		IModel<List<Participant>> listModel = new PropertyModel<List<Participant>>(
-				model, "participants");
+		IModel<List<Participant>> listModel = new PropertyModel<List<Participant>>(model,
+				"participants");
 
 		add(new ListView<Participant>("participants", listModel) {
 			private static final long serialVersionUID = 1L;
 
 			@Override
 			protected void populateItem(final ListItem<Participant> item) {
-				item.add(new Label<String>("name", new PropertyModel<String>(
-						item.getModel(), "name")));
+				WebMarkupContainer<Void> userType = new WebMarkupContainer<Void>("userType");
+				userType.add(new AttributeModifier("class", true,
+						new AbstractReadOnlyModel<String>() {
+							private static final long serialVersionUID = 1L;
+
+							@Override
+							public String getObject() {
+								return PlanningTable.this.getModelObject().isOwner(
+										item.getModelObject()) ? "owner" : "player";
+							}
+						}));
+				item.add(userType);
+
+				Label<String> nameLabel = new Label<String>("name", new PropertyModel<String>(item
+						.getModel(), "name"));
+				nameLabel.add(new AttributeModifier("style", true,
+						new AbstractReadOnlyModel<String>() {
+							private static final long serialVersionUID = 1L;
+
+							@Override
+							public String getObject() {
+								return PlanningTable.this.getModelObject().getParticipant() == item
+										.getModelObject() ? "text-decoration: underline" : null;
+							}
+						}));
+				item.add(nameLabel);
 
 				// Status
 				AbstractReadOnlyModel<ParticipantStatus> statusModel = new AbstractReadOnlyModel<ParticipantStatus>() {
@@ -45,17 +69,14 @@ public class PlanningTable extends Panel<PlanningSession> {
 
 					@Override
 					public ParticipantStatus getObject() {
-						PlanningSession planningSession = PlanningTable.this
-								.getModelObject();
-						return planningSession.getParticipantStatus(item
-								.getModelObject());
+						PlanningSession planningSession = PlanningTable.this.getModelObject();
+						return planningSession.getParticipantStatus(item.getModelObject());
 					}
 				};
-				item.add(new Label<String>("status", new StringResourceModel(
-						"status.${name()}", this, statusModel)));
+				item.add(new Label<String>("status", new StringResourceModel("status.${name()}",
+						this, statusModel)));
 
-				WebMarkupContainer<Object> pingComponent = new WebMarkupContainer<Object>(
-						"ping");
+				WebMarkupContainer<Object> pingComponent = new WebMarkupContainer<Object>("ping");
 				AbstractReadOnlyModel<String> cssClassModel = new AbstractReadOnlyModel<String>() {
 					private static final long serialVersionUID = 1L;
 
@@ -81,8 +102,7 @@ public class PlanningTable extends Panel<PlanningSession> {
 						return cssClass;
 					}
 				};
-				pingComponent.add(new AttributeModifier("class", true,
-						cssClassModel));
+				pingComponent.add(new AttributeModifier("class", true, cssClassModel));
 				item.add(pingComponent);
 
 				IModel<String> cardModel = new AbstractReadOnlyModel<String>() {
@@ -90,8 +110,7 @@ public class PlanningTable extends Panel<PlanningSession> {
 
 					@Override
 					public String getObject() {
-						PlanningSession planningSession = PlanningTable.this
-								.getModelObject();
+						PlanningSession planningSession = PlanningTable.this.getModelObject();
 						PlanningRound currentPlanningTurn = planningSession
 								.getCurrentPlanningRound();
 						if (currentPlanningTurn != null) {
@@ -99,8 +118,7 @@ public class PlanningTable extends Panel<PlanningSession> {
 							if (currentPlanningTurn.hasChosedCard(participant)) {
 								if (currentPlanningTurn.isComplete()
 										|| planningSession.getParticipant() == participant) {
-									ICard card = currentPlanningTurn
-											.getCard(participant);
+									ICard card = currentPlanningTurn.getCard(participant);
 									return card.getDisplayValue();
 								}
 							}
@@ -111,44 +129,14 @@ public class PlanningTable extends Panel<PlanningSession> {
 				};
 				item.add(new Label<String>("card", cardModel));
 
-				// IModel<CardImageResourceReference> cardModel = new
-				// AbstractReadOnlyModel<CardImageResourceReference>() {
-				// private static final long serialVersionUID = 1L;
-				//
-				// @Override
-				// public CardImageResourceReference getObject() {
-				// PlanningSession planningSession = PlanningTable.this
-				// .getModelObject();
-				// PlanningRound currentPlanningTurn = planningSession
-				// .getCurrentPlanningRound();
-				// if (currentPlanningTurn != null) {
-				// Participant participant = item.getModelObject();
-				// if (currentPlanningTurn.hasChosedCard(participant)) {
-				// if (currentPlanningTurn.isComplete()
-				// || planningSession.getParticipant() == participant) {
-				// ICard card = currentPlanningTurn
-				// .getCard(participant);
-				// return new CardImageResourceReference(0.5,
-				// card);
-				// }
-				// }
-				// }
-				//
-				// return new CardImageResourceReference(0.5, null);
-				// }
-				// };
-				// item.add(new Image<CardImageResourceReference>("card",
-				// cardModel));
-
 				// Remove link
-				AjaxLink<Participant> removeLink = new AjaxLink<Participant>(
-						"removeLink", item.getModel()) {
+				AjaxLink<Participant> removeLink = new AjaxLink<Participant>("removeLink", item
+						.getModel()) {
 					private static final long serialVersionUID = 1L;
 
 					@Override
 					public void onClick(AjaxRequestTarget target) {
-						PlanningSession planningSession = PlanningTable.this
-								.getModelObject();
+						PlanningSession planningSession = PlanningTable.this.getModelObject();
 						planningSession.remove(getModelObject());
 						target.addComponent(PlanningTable.this);
 					}
@@ -156,14 +144,12 @@ public class PlanningTable extends Panel<PlanningSession> {
 					@Override
 					public boolean isVisible() {
 						return PlanningTable.this.getModelObject().isOwner()
-								&& PlanningTable.this.getModelObject()
-										.getParticipant().equals(
-												getModelObject()) == false;
+								&& PlanningTable.this.getModelObject().getParticipant().equals(
+										getModelObject()) == false;
 					}
 				};
-				removeLink.add(new ClickConfirmBehavior(
-						new StringResourceModel("confirmRemoveParticipant",
-								this, item.getModel())));
+				removeLink.add(new ClickConfirmBehavior(new StringResourceModel(
+						"confirmRemoveParticipant", this, item.getModel())));
 				item.add(removeLink);
 			}
 		});

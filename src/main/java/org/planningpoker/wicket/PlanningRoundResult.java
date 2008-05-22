@@ -72,6 +72,11 @@ public class PlanningRoundResult implements Serializable {
 	}
 
 	private final List<CardCount> cards = new ArrayList<CardCount>();
+	private final PlanningRound planningRound;
+
+	public PlanningRoundResult(PlanningRound planningRound) {
+		this.planningRound = planningRound;
+	}
 
 	public void addCard(ICard card) {
 		CardCount cardCount = getCardCountForCard(card);
@@ -115,6 +120,10 @@ public class PlanningRoundResult implements Serializable {
 		int cardTotals = getCardTotals();
 
 		return (double) cardCount / (double) cardTotals;
+	}
+
+	public PlanningRound getPlanningRound() {
+		return planningRound;
 	}
 
 	private CardCount getCardCountForCard(ICard card) {

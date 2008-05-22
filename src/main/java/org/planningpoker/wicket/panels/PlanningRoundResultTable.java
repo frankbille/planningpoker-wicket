@@ -12,32 +12,42 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.planningpoker.domain.ICard;
+import org.planningpoker.wicket.PlanningRound;
 import org.planningpoker.wicket.PlanningRoundResult;
 
+/**
+ * Renders the planning round result.
+ */
 public class PlanningRoundResultTable extends Panel<PlanningRoundResult> {
 	private static final long serialVersionUID = 1L;
 
+	/**
+	 * Construct
+	 * 
+	 * @param id
+	 *            Wicket id
+	 * @param model
+	 *            Model containing the planning round result
+	 */
 	public PlanningRoundResultTable(String id, IModel<PlanningRoundResult> model) {
 		super(id, model);
 
 		setOutputMarkupId(true);
 		setOutputMarkupPlaceholderTag(true);
 
-		add(new ListView<ICard>("cards", new PropertyModel<List<ICard>>(model,
-				"cards")) {
+		add(new ListView<ICard>("cards", new PropertyModel<List<ICard>>(model, "cards")) {
 			private static final long serialVersionUID = 1L;
 
 			@Override
 			protected void populateItem(final ListItem<ICard> item) {
-				item.add(new Label<String>("card", new PropertyModel<String>(
-						item.getModel(), "displayValue")));
+				item.add(new Label<String>("card", new PropertyModel<String>(item.getModel(),
+						"displayValue")));
 
 				final PlanningRoundResult planningRoundResult = PlanningRoundResultTable.this
 						.getModelObject();
 
-				item.add(new Label<Integer>("count",
-						new Model<Integer>(planningRoundResult
-								.getCardCount(item.getModelObject()))));
+				item.add(new Label<Integer>("count", new Model<Integer>(planningRoundResult
+						.getCardCount(item.getModelObject()))));
 
 				IModel<String> pctModel = new AbstractReadOnlyModel<String>() {
 					private static final long serialVersionUID = 1L;
@@ -45,8 +55,7 @@ public class PlanningRoundResultTable extends Panel<PlanningRoundResult> {
 					@Override
 					public String getObject() {
 						return NumberFormat.getPercentInstance().format(
-								planningRoundResult.getCardPercentage(item
-										.getModelObject()));
+								planningRoundResult.getCardPercentage(item.getModelObject()));
 					}
 				};
 
@@ -58,5 +67,11 @@ public class PlanningRoundResultTable extends Panel<PlanningRoundResult> {
 				return PlanningRoundResultTable.this.isEnabled();
 			}
 		});
+	}
+
+	private PlanningRound getPlanningRound() {
+		PlanningRoundResult planningRoundResult = PlanningRoundResultTable.this.getModelObject();
+		PlanningRound planningRound = planningRoundResult.getPlanningRound();
+		return planningRound;
 	}
 }

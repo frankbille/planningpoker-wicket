@@ -68,6 +68,6 @@ public class DeckPanel extends Panel<PlanningRound> {
 	@Override
 	public boolean isEnabled() {
 		return getModelObject() != null
-				&& getModelObject().isComplete() == false;
+				&& getModelObject().isFinished() == false;
 	}
 }

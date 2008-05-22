@@ -3,6 +3,24 @@ package org.planningpoker.domain;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * A standard deck of cards used in normal planning poker games. The cards are:
+ * 
+ * <ul>
+ * <li>?
+ * <li>0
+ * <li>&frac12;
+ * <li>1
+ * <li>3
+ * <li>5
+ * <li>8
+ * <li>13
+ * <li>20
+ * <li>40
+ * <li>100
+ * <li>&infin;
+ * </ul>
+ */
 public class StandardDeck implements IDeck {
 	private static final long serialVersionUID = 1L;
 

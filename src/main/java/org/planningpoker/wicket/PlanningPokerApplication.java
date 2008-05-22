@@ -14,6 +14,9 @@ import org.planningpoker.wicket.pages.FrontPage;
 import org.planningpoker.wicket.pages.PlanningPage;
 import org.planningpoker.wicket.pages.TerminatedPage;
 
+/**
+ * Wicket application
+ */
 public class PlanningPokerApplication extends WebApplication {
 
 	public static PlanningPokerApplication get() {
@@ -36,30 +39,47 @@ public class PlanningPokerApplication extends WebApplication {
 		return FrontPage.class;
 	}
 
+	/**
+	 * Create a new planing poker session. This is a convenience method, which
+	 * takes the current Wicket {@link Session} and uses it for the owner of the
+	 * planning session.
+	 * 
+	 * @param title
+	 *            The title of the planning session.
+	 * @param ownerName
+	 *            The name of the owner of the planning session.
+	 * @return The new planning session.
+	 */
 	public PlanningSession createNewPlanningSession(String title,
 			String ownerName) {
 		return createNewPlanningSession(title, ownerName, Session.get());
 	}
 
+	/**
+	 * Create a new planing poker session.
+	 * 
+	 * @param title
+	 *            The title of the planning session.
+	 * @param ownerName
+	 *            The name of the owner of the planning session.
+	 * @param ownerSession
+	 *            The Wicket {@link Session} of the owner.
+	 * @return The new planning session.
+	 */
 	public PlanningSession createNewPlanningSession(String title,
 			String ownerName, Session ownerSession) {
-		return createNewPlanningSession(title, null, ownerName, ownerSession);
-	}
-
-	public PlanningSession createNewPlanningSession(String title,
-			String password, String ownerName) {
-		return createNewPlanningSession(title, password, ownerName, Session
-				.get());
-	}
-
-	public PlanningSession createNewPlanningSession(String title,
-			String password, String ownerName, Session ownerSession) {
-		PlanningSession planningSession = new PlanningSession(title, password,
-				ownerName, ownerSession);
+		PlanningSession planningSession = new PlanningSession(title, ownerName,
+				ownerSession);
 		planningSessions.add(planningSession);
 		return planningSession;
 	}
 
+	/**
+	 * Get all the available planning sessions. A planning session is available
+	 * if it's status is {@link SessionStatus#SETTING_UP}.
+	 * 
+	 * @return All the available planning sessions.
+	 */
 	public List<PlanningSession> getAvailablePlanningSessions() {
 		List<PlanningSession> filteredPlanningSessions = new ArrayList<PlanningSession>();
 

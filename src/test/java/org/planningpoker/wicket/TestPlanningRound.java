@@ -21,8 +21,7 @@ public class TestPlanningRound {
 		WebSession ses1 = createSession();
 		WebSession ses2 = createSession();
 		WebSession ses3 = createSession();
-		PlanningSession session = new PlanningSession("Test", "test", "P1",
-				ses1);
+		PlanningSession session = new PlanningSession("Test", "P1", ses1);
 		session.addParticipant("P2", ses2);
 		session.addParticipant("P3", ses3);
 

@@ -27,7 +27,6 @@ public class FrontPage extends BasePage<Void> {
 		private static final long serialVersionUID = 1L;
 
 		private String title;
-		private String password;
 		private String name;
 
 		public String getTitle() {
@@ -36,14 +35,6 @@ public class FrontPage extends BasePage<Void> {
 
 		public void setTitle(String title) {
 			this.title = title;
-		}
-
-		public String getPassword() {
-			return password;
-		}
-
-		public void setPassword(String password) {
-			this.password = password;
 		}
 
 		public String getName() {
@@ -114,8 +105,7 @@ public class FrontPage extends BasePage<Void> {
 			protected void onSubmit() {
 				PlanningPokerApplication app = PlanningPokerApplication.get();
 				PlanningSession planningSession = app.createNewPlanningSession(
-						newSession.getTitle(), newSession.getPassword(),
-						newSession.getName());
+						newSession.getTitle(), newSession.getName());
 
 				getRequestCycle().setResponsePage(
 						new PlanningPage(planningSession));
@@ -124,8 +114,6 @@ public class FrontPage extends BasePage<Void> {
 		add(form);
 
 		form.add(new TextField<String>("title").setRequired(true));
-
-		// form.add(new PasswordTextField("password"));
 
 		form.add(new TextField<String>("name").setRequired(true));
 

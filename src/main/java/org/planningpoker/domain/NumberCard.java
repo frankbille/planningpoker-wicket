@@ -2,6 +2,10 @@ package org.planningpoker.domain;
 
 import java.text.DecimalFormat;
 
+/**
+ * Card which represent a number. This can be 1, 2, 10, 200 and also 0.5, 0.75
+ * etc.
+ */
 public class NumberCard implements ICard {
 	private static final long serialVersionUID = 1L;
 
@@ -11,6 +15,12 @@ public class NumberCard implements ICard {
 
 	private final double number;
 
+	/**
+	 * Create a new number card with the specified number as value.
+	 * 
+	 * @param number
+	 *            Value of this card.
+	 */
 	public NumberCard(double number) {
 		this.number = number;
 	}

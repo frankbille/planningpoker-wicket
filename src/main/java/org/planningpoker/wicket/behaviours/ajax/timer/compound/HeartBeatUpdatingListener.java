@@ -6,11 +6,15 @@ import org.planningpoker.wicket.behaviours.ajax.timer.compound.AjaxCompoundUpdat
 
 /**
  * Heart beat listener.
+ * 
+ * @param <T>
+ *            The heart beat type
  */
-public class HeartBeatUpdatingListener implements IUpdatingListener {
+public class HeartBeatUpdatingListener<T extends IHeartBeat> implements
+		IUpdatingListener {
 	private static final long serialVersionUID = 1L;
 
-	private final IHeartBeat heartBeat;
+	private final T heartBeat;
 
 	/**
 	 * Use this listener to get the heart beat of a client browser.
@@ -18,7 +22,7 @@ public class HeartBeatUpdatingListener implements IUpdatingListener {
 	 * @param heartBeat
 	 *            The heart beat implementation that is called.
 	 */
-	public HeartBeatUpdatingListener(IHeartBeat heartBeat) {
+	public HeartBeatUpdatingListener(T heartBeat) {
 		this.heartBeat = heartBeat;
 	}
 
@@ -38,6 +42,11 @@ public class HeartBeatUpdatingListener implements IUpdatingListener {
 	 */
 	public void onUpdated(AjaxRequestTarget target) {
 		heartBeat.beat();
+
+		onBeat(target, heartBeat);
+	}
+
+	protected void onBeat(AjaxRequestTarget target, T heartBeat) {
 	}
 
 }

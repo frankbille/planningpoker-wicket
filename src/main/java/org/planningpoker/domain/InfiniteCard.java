@@ -1,5 +1,8 @@
 package org.planningpoker.domain;
 
+/**
+ * Card representing an infinite value.
+ */
 public class InfiniteCard implements ICard {
 	private static final long serialVersionUID = 1L;
 
