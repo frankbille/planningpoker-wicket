@@ -12,7 +12,6 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.planningpoker.domain.ICard;
-import org.planningpoker.wicket.PlanningRound;
 import org.planningpoker.wicket.PlanningRoundResult;
 
 /**
@@ -67,11 +66,5 @@ public class PlanningRoundResultTable extends Panel<PlanningRoundResult> {
 				return PlanningRoundResultTable.this.isEnabled();
 			}
 		});
-	}
-
-	private PlanningRound getPlanningRound() {
-		PlanningRoundResult planningRoundResult = PlanningRoundResultTable.this.getModelObject();
-		PlanningRound planningRound = planningRoundResult.getPlanningRound();
-		return planningRound;
 	}
 }

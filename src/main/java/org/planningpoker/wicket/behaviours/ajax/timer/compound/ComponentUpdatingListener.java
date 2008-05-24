@@ -19,36 +19,36 @@ import org.planningpoker.wicket.behaviours.ajax.timer.compound.AjaxCompoundUpdat
  * <p>
  * TODO: Check if this can't be cleaned up a bit.
  */
-public class ComponentUpdatingListener implements IUpdatingListener {
+public class ComponentUpdatingListener<T extends Component<?>> implements IUpdatingListener {
 	private static final long serialVersionUID = 1L;
 
-	private static class UpdatingComponentState implements Serializable {
+	private static class UpdatingComponentState<T extends Component<?>> implements Serializable {
 		private static final long serialVersionUID = 1L;
 
 		private final IObjectState objectState;
-		private final IUpdatingComponent updatingComponent;
+		private final IUpdatingComponent<T> updatingComponent;
 
-		public UpdatingComponentState(IUpdatingComponent updatingComponent) {
+		public UpdatingComponentState(IUpdatingComponent<T> updatingComponent) {
 			this(updatingComponent, new SerializableObjectState());
 		}
 
-		public UpdatingComponentState(IUpdatingComponent updatingComponent,
+		public UpdatingComponentState(IUpdatingComponent<T> updatingComponent,
 				IObjectState objectState) {
 			this.updatingComponent = updatingComponent;
 			this.objectState = objectState;
 		}
 
-		public boolean updateState(Component<?> component) {
+		public boolean updateState(T component) {
 			Object stateObject = updatingComponent.getStateObject(component);
 
 			return objectState.checkState(stateObject);
 		}
 	}
 
-	private final Component<?> component;
-	private final UpdatingComponentState updatingComponentState;
+	private final T component;
+	private final UpdatingComponentState<T> updatingComponentState;
 
-	public <T extends Component<?>> ComponentUpdatingListener(T component) {
+	public ComponentUpdatingListener(T component) {
 		this(component, new IUpdatingComponent<T>() {
 			private static final long serialVersionUID = 1L;
 
@@ -57,18 +57,15 @@ public class ComponentUpdatingListener implements IUpdatingListener {
 			}
 
 			public Object getStateObject(T component) {
-				return isEnabled(component) && component.isEnabled() ? component
-						.getModelObject()
+				return isEnabled(component) && component.isEnabled() ? component.getModelObject()
 						: null;
 			}
 		});
 	}
 
-	public <T extends Component<?>> ComponentUpdatingListener(T component,
-			IUpdatingComponent<T> updatingComponent) {
+	public ComponentUpdatingListener(T component, IUpdatingComponent<T> updatingComponent) {
 		this.component = component;
-		this.updatingComponentState = new UpdatingComponentState(
-				updatingComponent);
+		this.updatingComponentState = new UpdatingComponentState<T>(updatingComponent);
 
 		component.setOutputMarkupId(true);
 	}

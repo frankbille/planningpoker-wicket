@@ -11,15 +11,8 @@ public class ToolTipBehavior extends AbstractBehavior {
 
 	private final IModel<?> textModel;
 
-	private Component<?> component;
-
 	public ToolTipBehavior(IModel<?> textModel) {
 		this.textModel = textModel;
-	}
-
-	@Override
-	public void bind(Component<?> component) {
-		this.component = component;
 	}
 
 	@Override
@@ -35,8 +28,7 @@ public class ToolTipBehavior extends AbstractBehavior {
 		Object modelObject = textModel.getObject();
 
 		String modelObjectString = Strings.toString(modelObject);
-		CharSequence escapedModelString = Strings
-				.escapeMarkup(modelObjectString);
+		CharSequence escapedModelString = Strings.escapeMarkup(modelObjectString);
 		return escapedModelString;
 	}
 

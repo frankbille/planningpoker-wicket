@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.apache.wicket.RestartResponseAtInterceptPageException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.extensions.ajax.markup.html.AjaxEditableLabel;
 import org.apache.wicket.markup.html.IHeaderResponse;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.model.IModel;
@@ -38,7 +37,7 @@ public class PlanningPage extends BasePage<PlanningSession> {
 	private PlanningRoundResultTable planningRoundResultTable;
 	private PlanningTable planningTable;
 	private PlanningSessionResultTable planningSessionResultTable;
-	private AjaxEditableLabel<String> roundTitle;
+	private PlanningRoundTitleEditableLabel roundTitle;
 	private AjaxCompoundUpdatingTimerBehavior updatingBehavior;
 
 	public PlanningPage() {
@@ -106,8 +105,8 @@ public class PlanningPage extends BasePage<PlanningSession> {
 	private void addPlanningSessionResultTable() {
 		planningSessionResultTable = new PlanningSessionResultTable("planningSessionResultTable",
 				getModel());
-		updatingBehavior.add(new ComponentUpdatingListener(planningSessionResultTable,
-				new IUpdatingComponent<PlanningSessionResultTable>() {
+		updatingBehavior.add(new ComponentUpdatingListener<PlanningSessionResultTable>(
+				planningSessionResultTable, new IUpdatingComponent<PlanningSessionResultTable>() {
 					private static final long serialVersionUID = 1L;
 
 					public Object getStateObject(PlanningSessionResultTable component) {
@@ -138,8 +137,8 @@ public class PlanningPage extends BasePage<PlanningSession> {
 				target.addComponent(roundTitle);
 			}
 		};
-		updatingBehavior.add(new ComponentUpdatingListener(administrationPanel,
-				new IUpdatingComponent<AdministrationPanel>() {
+		updatingBehavior.add(new ComponentUpdatingListener<AdministrationPanel>(
+				administrationPanel, new IUpdatingComponent<AdministrationPanel>() {
 					private static final long serialVersionUID = 1L;
 
 					public Object getStateObject(AdministrationPanel component) {
@@ -163,7 +162,7 @@ public class PlanningPage extends BasePage<PlanningSession> {
 				target.addComponent(administrationPanel);
 			}
 		};
-		updatingBehavior.add(new ComponentUpdatingListener(deckPanel,
+		updatingBehavior.add(new ComponentUpdatingListener<DeckPanel>(deckPanel,
 				new IUpdatingComponent<DeckPanel>() {
 					private static final long serialVersionUID = 1L;
 
@@ -177,7 +176,7 @@ public class PlanningPage extends BasePage<PlanningSession> {
 	private void addPlanningTable(PlanningSession planningSession) {
 		planningTable = new PlanningTable("planningTable", new Model<PlanningSession>(
 				planningSession));
-		updatingBehavior.add(new ComponentUpdatingListener(planningTable,
+		updatingBehavior.add(new ComponentUpdatingListener<PlanningTable>(planningTable,
 				new IUpdatingComponent<PlanningTable>() {
 					private static final long serialVersionUID = 1L;
 
@@ -217,7 +216,8 @@ public class PlanningPage extends BasePage<PlanningSession> {
 			}
 		};
 		planningRoundResultTable.setOutputMarkupPlaceholderTag(true);
-		updatingBehavior.add(new ComponentUpdatingListener(planningRoundResultTable));
+		updatingBehavior.add(new ComponentUpdatingListener<PlanningRoundResultTable>(
+				planningRoundResultTable));
 		add(planningRoundResultTable);
 	}
 
@@ -227,11 +227,11 @@ public class PlanningPage extends BasePage<PlanningSession> {
 
 		roundTitle = new PlanningRoundTitleEditableLabel("roundTitle", roundModel);
 		roundTitle.setOutputMarkupPlaceholderTag(true);
-		updatingBehavior.add(new ComponentUpdatingListener(roundTitle,
-				new IUpdatingComponent<AjaxEditableLabel<String>>() {
+		updatingBehavior.add(new ComponentUpdatingListener<PlanningRoundTitleEditableLabel>(
+				roundTitle, new IUpdatingComponent<PlanningRoundTitleEditableLabel>() {
 					private static final long serialVersionUID = 1L;
 
-					public Object getStateObject(AjaxEditableLabel<String> component) {
+					public Object getStateObject(PlanningRoundTitleEditableLabel component) {
 						StringBuilder b = new StringBuilder();
 						b.append(component.isEnabled());
 						b.append(component.isVisible());

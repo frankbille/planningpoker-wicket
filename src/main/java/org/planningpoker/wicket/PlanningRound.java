@@ -21,6 +21,8 @@ public class PlanningRound implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private static class NullCard implements ICard {
+		private static final long serialVersionUID = 1L;
+
 		public String getDisplayValue() {
 			return null;
 		}
@@ -113,8 +115,7 @@ public class PlanningRound implements Serializable {
 	}
 
 	public List<Participant> getParticipants() {
-		return Collections.unmodifiableList(new ArrayList<Participant>(
-				participantCards.keySet()));
+		return Collections.unmodifiableList(new ArrayList<Participant>(participantCards.keySet()));
 	}
 
 	public boolean hasChosedCard(Participant participant) {
@@ -135,8 +136,7 @@ public class PlanningRound implements Serializable {
 
 	public void selectCard(ICard card, Participant participant) {
 		if (participantCards.containsKey(participant) == false) {
-			throw new IllegalArgumentException("Unknown participant: "
-					+ participant);
+			throw new IllegalArgumentException("Unknown participant: " + participant);
 		}
 
 		participantCards.put(participant, card);
@@ -150,8 +150,7 @@ public class PlanningRound implements Serializable {
 
 	public synchronized PlanningRoundResult getPlanningRoundResult() {
 		if (isComplete() == false) {
-			throw new IllegalStateException(
-					"Can't get the result until the round is complete.");
+			throw new IllegalStateException("Can't get the result until the round is complete.");
 		}
 
 		PlanningRoundResult planningRoundResult = new PlanningRoundResult(this);
