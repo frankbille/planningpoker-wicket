@@ -7,11 +7,22 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.util.string.JavascriptUtils;
 import org.apache.wicket.util.string.Strings;
 
+/**
+ * Displays a java script confirmation dialog, which the user has to confirm
+ * before the link is executed.
+ */
 public class ClickConfirmBehavior extends AbstractBehavior {
 	private static final long serialVersionUID = 1L;
 
 	private final IModel<?> textModel;
 
+	/**
+	 * Construct.
+	 * 
+	 * @param textModel
+	 *            The model containing the text to display to the user,
+	 *            describing why they need to confirm the clicking on the link.
+	 */
 	public ClickConfirmBehavior(IModel<?> textModel) {
 		this.textModel = textModel;
 	}
@@ -43,8 +54,7 @@ public class ClickConfirmBehavior extends AbstractBehavior {
 	protected CharSequence getEscapedModelObject() {
 		Object modelObject = textModel.getObject();
 		String modelObjectString = Strings.toString(modelObject);
-		CharSequence escapedModelString = JavascriptUtils
-				.escapeQuotes(modelObjectString);
+		CharSequence escapedModelString = JavascriptUtils.escapeQuotes(modelObjectString);
 		return escapedModelString;
 	}
 

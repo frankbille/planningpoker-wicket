@@ -6,11 +6,20 @@ import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.util.string.Strings;
 
+/**
+ * Adds a tool tip to a component. Right now the "title" attribute is used.
+ */
 public class ToolTipBehavior extends AbstractBehavior {
 	private static final long serialVersionUID = 1L;
 
 	private final IModel<?> textModel;
 
+	/**
+	 * Construct.
+	 * 
+	 * @param textModel
+	 *            The tool tip to show for the component.
+	 */
 	public ToolTipBehavior(IModel<?> textModel) {
 		this.textModel = textModel;
 	}

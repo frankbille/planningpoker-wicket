@@ -114,26 +114,68 @@ public class PlanningRound implements Serializable {
 		return finished;
 	}
 
+	/**
+	 * @return The participants in this round. The list is unmodifiable.
+	 */
 	public List<Participant> getParticipants() {
 		return Collections.unmodifiableList(new ArrayList<Participant>(participantCards.keySet()));
 	}
 
+	/**
+	 * Check if the participant has selected a card.
+	 * 
+	 * @param participant
+	 *            Check participant to check.
+	 * @return True if the participant has selected a card.
+	 */
 	public boolean hasChosedCard(Participant participant) {
 		return participantCards.get(participant) instanceof NullCard == false;
 	}
 
+	/**
+	 * Get the selected card for a specific participant
+	 * 
+	 * @param participant
+	 *            Get the card that this participant has selected.
+	 * @return The card selected by the specific participant.
+	 */
 	public ICard getCard(Participant participant) {
 		return participantCards.get(participant);
 	}
 
+	/**
+	 * Select a card for the participant, associated with the current Wicket
+	 * {@link Session}.
+	 * 
+	 * @param card
+	 *            The card to select.
+	 */
 	public void selectCard(ICard card) {
 		selectCard(card, planningSession.getParticipant());
 	}
 
+	/**
+	 * Select a card for the participant, associated with the specified Wicket
+	 * {@link Session}.
+	 * 
+	 * @param card
+	 *            The card to select
+	 * @param session
+	 *            The Wicket {@link Session} associated with a participant in
+	 *            this round.
+	 */
 	public void selectCard(ICard card, Session session) {
 		selectCard(card, planningSession.getParticipant(session));
 	}
 
+	/**
+	 * Select a card for a specific participant.
+	 * 
+	 * @param card
+	 *            The card to select.
+	 * @param participant
+	 *            Select the card for this participant.
+	 */
 	public void selectCard(ICard card, Participant participant) {
 		if (participantCards.containsKey(participant) == false) {
 			throw new IllegalArgumentException("Unknown participant: " + participant);
@@ -142,27 +184,24 @@ public class PlanningRound implements Serializable {
 		participantCards.put(participant, card);
 	}
 
+	/**
+	 * Select a specific card for all the participants in this round.
+	 * 
+	 * @param card
+	 *            The card to select.
+	 */
 	public void selectCardForAll(ICard card) {
 		for (Participant participant : participantCards.keySet()) {
 			selectCard(card, participant);
 		}
 	}
 
-	public synchronized PlanningRoundResult getPlanningRoundResult() {
-		if (isComplete() == false) {
-			throw new IllegalStateException("Can't get the result until the round is complete.");
-		}
-
-		PlanningRoundResult planningRoundResult = new PlanningRoundResult(this);
-
-		for (Participant participant : participantCards.keySet()) {
-			ICard card = participantCards.get(participant);
-			planningRoundResult.addCard(card);
-		}
-
-		return planningRoundResult;
-	}
-
+	/**
+	 * Get the selected card for all the participants in this round. It only
+	 * returns a non-null value if {@link #isFinished()} returns true.
+	 * 
+	 * @return The card that all the participants agree on.
+	 */
 	public ICard getSelectedCard() {
 		ICard selectedCard = null;
 
@@ -173,10 +212,31 @@ public class PlanningRound implements Serializable {
 		return selectedCard;
 	}
 
+	/**
+	 * Get the result of this planning round. May only be called if
+	 * {@link #isComplete()} returns true.
+	 * 
+	 * @return The result of this planning round.
+	 */
+	public synchronized PlanningRoundResult getPlanningRoundResult() {
+		return new PlanningRoundResult(this);
+	}
+
+	/**
+	 * Get the title of this round.
+	 * 
+	 * @return The title of this round.
+	 */
 	public String getTitle() {
 		return title;
 	}
 
+	/**
+	 * Set the title of this round.
+	 * 
+	 * @param title
+	 *            The title of this round.
+	 */
 	public void setTitle(String title) {
 		this.title = title;
 	}

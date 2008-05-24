@@ -7,30 +7,33 @@ import java.util.List;
 
 import org.planningpoker.domain.ICard;
 
+/**
+ * The result of a specific planning round. This class returns statistics of a
+ * planning round, such as how many selected a given card etc.
+ */
 public class PlanningRoundResult implements Serializable {
 	private static final long serialVersionUID = 1L;
 
-	private static class CardCount implements Serializable,
-			Comparable<CardCount> {
+	private static class CardCount implements Serializable, Comparable<CardCount> {
 		private static final long serialVersionUID = 1L;
 
 		private final ICard card;
 		private int count;
 
-		public CardCount(ICard card) {
+		CardCount(ICard card) {
 			this.card = card;
 			count = 0;
 		}
 
-		public ICard getCard() {
+		ICard getCard() {
 			return card;
 		}
 
-		public int getCount() {
+		int getCount() {
 			return count;
 		}
 
-		public void yetAnotherCard() {
+		void yetAnotherCard() {
 			count++;
 		}
 
@@ -74,21 +77,33 @@ public class PlanningRoundResult implements Serializable {
 	private final List<CardCount> cards = new ArrayList<CardCount>();
 	private final PlanningRound planningRound;
 
+	/**
+	 * Construct
+	 * 
+	 * @param planningRound
+	 *            The planning round to create statistics from
+	 */
 	public PlanningRoundResult(PlanningRound planningRound) {
-		this.planningRound = planningRound;
-	}
-
-	public void addCard(ICard card) {
-		CardCount cardCount = getCardCountForCard(card);
-
-		if (cardCount == null) {
-			cardCount = new CardCount(card);
-			cards.add(cardCount);
+		if (planningRound.isComplete() == false) {
+			throw new IllegalStateException("Can't get the result until the round is complete.");
 		}
 
-		cardCount.yetAnotherCard();
+		this.planningRound = planningRound;
+
+		for (Participant participant : planningRound.getParticipants()) {
+			ICard card = planningRound.getCard(participant);
+			addCard(card);
+		}
 	}
 
+	/**
+	 * Get all the unique cards in the round. This means that if 4 participants
+	 * had selected the same card it will only be returns once in this method.
+	 * It is possible to get the card count by using the
+	 * {@link #getCardCount(ICard)} method.
+	 * 
+	 * @return A list of the unique cards in the round.
+	 */
 	public List<ICard> getCards() {
 		Collections.sort(cards);
 
@@ -101,10 +116,23 @@ public class PlanningRoundResult implements Serializable {
 		return cardList;
 	}
 
+	/**
+	 * Get the number of participants that had selected a specific card.
+	 * 
+	 * @param card
+	 *            The card to get the count for.
+	 * @return The number of participants that had selected the specified card.
+	 */
 	public int getCardCount(ICard card) {
 		return getCardCountForCard(card).getCount();
 	}
 
+	/**
+	 * Get the number of total selected cards. This number should always be the
+	 * same as the number of participants in the round.
+	 * 
+	 * @return The total number of cards in the round.
+	 */
 	public int getCardTotals() {
 		int total = 0;
 
@@ -115,6 +143,16 @@ public class PlanningRoundResult implements Serializable {
 		return total;
 	}
 
+	/**
+	 * Get how many participants had selected the specified card as a percentage
+	 * of the total number of cards selected.
+	 * 
+	 * @param card
+	 *            The card to get the percentage of the total number of cards
+	 *            selected for.
+	 * @return The percentage of how many selected this card out of all the
+	 *         cards selected.
+	 */
 	public double getCardPercentage(ICard card) {
 		int cardCount = getCardCount(card);
 		int cardTotals = getCardTotals();
@@ -122,6 +160,9 @@ public class PlanningRoundResult implements Serializable {
 		return (double) cardCount / (double) cardTotals;
 	}
 
+	/**
+	 * @return The planning round.
+	 */
 	public PlanningRound getPlanningRound() {
 		return planningRound;
 	}
@@ -137,5 +178,16 @@ public class PlanningRoundResult implements Serializable {
 		}
 
 		return cardCount;
+	}
+
+	private void addCard(ICard card) {
+		CardCount cardCount = getCardCountForCard(card);
+
+		if (cardCount == null) {
+			cardCount = new CardCount(card);
+			cards.add(cardCount);
+		}
+
+		cardCount.yetAnotherCard();
 	}
 }
