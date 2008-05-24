@@ -2,13 +2,11 @@ package org.planningpoker.wicket.pages;
 
 import java.util.List;
 
-import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.RestartResponseAtInterceptPageException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.extensions.ajax.markup.html.AjaxEditableLabel;
 import org.apache.wicket.markup.html.IHeaderResponse;
 import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.model.AbstractReadOnlyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
@@ -26,6 +24,7 @@ import org.planningpoker.wicket.behaviours.ajax.timer.compound.ComponentUpdating
 import org.planningpoker.wicket.behaviours.ajax.timer.compound.HeartBeatUpdatingListener;
 import org.planningpoker.wicket.behaviours.ajax.timer.compound.IUpdatingComponent;
 import org.planningpoker.wicket.behaviours.ajax.timer.compound.AjaxCompoundUpdatingTimerBehavior.IUpdatingListener;
+import org.planningpoker.wicket.components.PlanningRoundTitleEditableLabel;
 import org.planningpoker.wicket.panels.AdministrationPanel;
 import org.planningpoker.wicket.panels.DeckPanel;
 import org.planningpoker.wicket.panels.PlanningRoundResultTable;
@@ -223,42 +222,11 @@ public class PlanningPage extends BasePage<PlanningSession> {
 	}
 
 	private void addRoundTitle() {
-		IModel<String> roundTitleModel = new PropertyModel<String>(getModel(),
-				"currentPlanningRound.title");
+		IModel<PlanningRound> roundModel = new PropertyModel<PlanningRound>(getModel(),
+				"currentPlanningRound");
 
-		roundTitle = new AjaxEditableLabel<String>("roundTitle", roundTitleModel) {
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public boolean isEnabled() {
-				PlanningSession planningSession = PlanningPage.this.getModelObject();
-				PlanningRound currentPlanningRound = planningSession.getCurrentPlanningRound();
-
-				return currentPlanningRound != null && planningSession.isOwner();
-			}
-
-			@Override
-			public boolean isVisible() {
-				PlanningSession planningSession = PlanningPage.this.getModelObject();
-
-				return planningSession.isStarted();
-			}
-
-			@Override
-			protected String defaultNullLabel() {
-				return "Round title";
-			}
-		};
+		roundTitle = new PlanningRoundTitleEditableLabel("roundTitle", roundModel);
 		roundTitle.setOutputMarkupPlaceholderTag(true);
-		roundTitle.add(new AttributeModifier("class", true, new AbstractReadOnlyModel<String>() {
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public String getObject() {
-				return roundTitle.getModelObject() != null ? null : PlanningPage.this
-						.getModelObject().isOwner() ? "editRoundTitle" : "noRoundTitle";
-			}
-		}));
 		updatingBehavior.add(new ComponentUpdatingListener(roundTitle,
 				new IUpdatingComponent<AjaxEditableLabel<String>>() {
 					private static final long serialVersionUID = 1L;

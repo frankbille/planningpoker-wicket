@@ -1,19 +1,19 @@
 <wicket:panel>
-	<table>
+	<table class="planningSessionResultTable">
 		<thead>
 			<tr>
-				<th><wicket:message key="number"></wicket:message></th>
-				<th><wicket:message key="title"></wicket:message></th>
-				<th><wicket:message key="selectedCard"></wicket:message></th>
-				<th><wicket:message key="dateCreated"></wicket:message></th>
+				<th class="col1pct"><wicket:message key="number"></wicket:message></th>
+				<th class="col1pct"><wicket:message key="selectedCard"></wicket:message></th>
+				<th class="col1pct"><wicket:message key="dateCreated"></wicket:message></th>
+				<th class="col99pct"><wicket:message key="title"></wicket:message></th>
 			</tr>
 		</thead>
 		<tbody>
 			<tr wicket:id="rounds">
-				<td wicket:id="id"></td>
-				<td wicket:id="title"></td>
-				<td wicket:id="selectedCard"></td>
-				<td wicket:id="timestamp"></td>
+				<td class="col1pct" wicket:id="id"></td>
+				<td class="col1pct" wicket:id="selectedCard"></td>
+				<td class="col1pct" wicket:id="timestamp"></td>
+				<td class="col99pct" wicket:id="title"></td>
 			</tr>
 		</tbody>
 	</table>
