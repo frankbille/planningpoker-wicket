@@ -60,13 +60,16 @@ public class NumberCard implements ICard {
 
 	@Override
 	public boolean equals(Object obj) {
-		return obj != null && obj instanceof NumberCard
-				&& ((NumberCard) obj).number == number;
+		return obj != null && obj instanceof NumberCard && ((NumberCard) obj).number == number;
 	}
 
 	@Override
 	public String toString() {
 		return getDisplayValue();
+	}
+
+	public double getNumber() {
+		return number;
 	}
 
 }

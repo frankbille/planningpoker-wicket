@@ -59,6 +59,18 @@ public class PlanningRoundResultTable extends Panel<PlanningRoundResult> {
 				};
 
 				item.add(new Label<String>("percentage", pctModel));
+
+				IModel<String> averageModel = new AbstractReadOnlyModel<String>() {
+					private static final long serialVersionUID = 1L;
+
+					@Override
+					public String getObject() {
+						return NumberFormat.getNumberInstance().format(
+								planningRoundResult.getCardAverage());
+					}
+				};
+				item.add(new Label<String>("average", averageModel));
+
 			}
 
 			@Override

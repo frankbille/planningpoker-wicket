@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.planningpoker.domain.ICard;
+import org.planningpoker.domain.NumberCard;
 
 /**
  * The result of a specific planning round. This class returns statistics of a
@@ -141,6 +142,27 @@ public class PlanningRoundResult implements Serializable {
 		}
 
 		return total;
+	}
+
+	/**
+	 * Simple average based on cardvalues/cardtotals Only number cards are used!
+	 * 
+	 * @return average of round score
+	 */
+	public float getCardAverage() {
+		float total = 0;
+
+		for (ICard card : getCards()) {
+			if (NumberCard.class.isInstance(card)) {
+				NumberCard n = (NumberCard) card;
+				total += n.getNumber();
+			}
+		}
+		if (total != 0 && getCardTotals() != 0) {
+			total = total / getCardTotals();
+		}
+		return total;
+
 	}
 
 	/**
