@@ -155,7 +155,8 @@ public class PlanningRoundResult implements Serializable {
 		for (ICard card : getCards()) {
 			if (NumberCard.class.isInstance(card)) {
 				NumberCard n = (NumberCard) card;
-				total += n.getNumber();
+
+				total += n.getNumber() * getCardCount(card);
 			}
 		}
 		if (total != 0 && getCardTotals() != 0) {
