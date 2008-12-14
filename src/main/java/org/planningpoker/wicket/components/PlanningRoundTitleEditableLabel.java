@@ -14,48 +14,58 @@ public class PlanningRoundTitleEditableLabel extends AjaxEditableLabel<String> {
 
 	private final IModel<PlanningRound> planningRoundModel;
 
-	public PlanningRoundTitleEditableLabel(String id, final IModel<PlanningRound> planningRoundModel) {
+	public PlanningRoundTitleEditableLabel(String id,
+			final IModel<PlanningRound> planningRoundModel) {
 		super(id, new PropertyModel<String>(planningRoundModel, "title"));
 		this.planningRoundModel = planningRoundModel;
 
-		add(new AttributeModifier("class", true, new AbstractReadOnlyModel<String>() {
-			private static final long serialVersionUID = 1L;
+		add(new AttributeModifier("class", true,
+				new AbstractReadOnlyModel<String>() {
+					private static final long serialVersionUID = 1L;
 
-			@Override
-			public String getObject() {
-				String roundTitle = PlanningRoundTitleEditableLabel.this.getModelObject();
+					@Override
+					public String getObject() {
+						String roundTitle = PlanningRoundTitleEditableLabel.this
+								.getModelObject();
 
-				StringBuilder cssClass = new StringBuilder();
+						StringBuilder cssClass = new StringBuilder();
 
-				if (planningRoundModel.getObject().getPlanningSession().isOwner()) {
-					cssClass.append("editableLabel");
-				}
+						if (planningRoundModel.getObject().getPlanningSession()
+								.isOwner()) {
+							cssClass.append("editableLabel");
+						}
 
-				if (roundTitle == null) {
-					if (cssClass.length() > 0) {
-						cssClass.append(" ");
+						if (roundTitle == null) {
+							if (cssClass.length() > 0) {
+								cssClass.append(" ");
+							}
+
+							if (planningRoundModel.getObject()
+									.getPlanningSession().isOwner()) {
+								cssClass.append("editRoundTitle");
+							} else {
+								cssClass.append("noRoundTitle");
+							}
+						}
+
+						return cssClass.toString();
 					}
-
-					if (planningRoundModel.getObject().getPlanningSession().isOwner()) {
-						cssClass.append("editRoundTitle");
-					} else {
-						cssClass.append("noRoundTitle");
-					}
-				}
-
-				return cssClass.toString();
-			}
-		}));
+				}));
 	}
 
 	@Override
 	public boolean isEnabled() {
 		boolean enabled = false;
 		if (planningRoundModel.getObject() != null) {
-			PlanningSession planningSession = planningRoundModel.getObject().getPlanningSession();
+			PlanningSession planningSession = planningRoundModel.getObject()
+					.getPlanningSession();
 			enabled = planningSession.isOwner();
 		}
 		return enabled;
+	}
+
+	public String getModelObject() {
+		return (String) getDefaultModelObject();
 	}
 
 	@Override

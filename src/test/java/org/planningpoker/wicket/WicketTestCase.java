@@ -50,7 +50,8 @@ public abstract class WicketTestCase {
 	}
 
 	protected void assertListViewSize(String componentPath, int size) {
-		Component<?> component = tester.getComponentFromLastRenderedPage(componentPath);
+		Component component = tester
+				.getComponentFromLastRenderedPage(componentPath);
 		assertTrue(component instanceof ListView);
 		ListView<?> listView = (ListView<?>) component;
 		assertEquals(size, listView.size());
@@ -78,8 +79,8 @@ public abstract class WicketTestCase {
 	}
 
 	protected PlanningSession createPlanningSession() {
-		PlanningSession planningSession = new PlanningSession("Started session", "Owner",
-				createNewSession());
+		PlanningSession planningSession = new PlanningSession(
+				"Started session", "Owner", createNewSession());
 
 		planningSession.addParticipant("Participant 1", createNewSession());
 		planningSession.addParticipant("Participant 2", createNewSession());
@@ -90,10 +91,11 @@ public abstract class WicketTestCase {
 
 	protected Session createNewSession() {
 		WebApplication application = tester.getApplication();
-		MockServletContext servletContext = new MockServletContext(application, "/");
+		MockServletContext servletContext = new MockServletContext(application,
+				"/");
 		MockHttpSession httpSession = new MockHttpSession(servletContext);
-		MockHttpServletRequest httpServletRequest = new MockHttpServletRequest(application,
-				httpSession, servletContext);
+		MockHttpServletRequest httpServletRequest = new MockHttpServletRequest(
+				application, httpSession, servletContext);
 		ServletWebRequest request = new ServletWebRequest(httpServletRequest);
 
 		MockHttpServletResponse httpServletResponse = new MockHttpServletResponse(

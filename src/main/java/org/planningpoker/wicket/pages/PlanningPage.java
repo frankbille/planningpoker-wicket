@@ -30,7 +30,7 @@ import org.planningpoker.wicket.panels.PlanningRoundResultTable;
 import org.planningpoker.wicket.panels.PlanningSessionResultTable;
 import org.planningpoker.wicket.panels.PlanningTable;
 
-public class PlanningPage extends BasePage<PlanningSession> {
+public class PlanningPage extends BasePage {
 
 	private AdministrationPanel administrationPanel;
 	private DeckPanel deckPanel;
@@ -41,32 +41,35 @@ public class PlanningPage extends BasePage<PlanningSession> {
 	private AjaxCompoundUpdatingTimerBehavior updatingBehavior;
 
 	public PlanningPage() {
-		throw new RestartResponseAtInterceptPageException(PlanningPokerApplication.get()
-				.getHomePage());
+		throw new RestartResponseAtInterceptPageException(
+				PlanningPokerApplication.get().getHomePage());
 	}
 
 	public PlanningPage(PlanningSession planningSession) {
 		if (planningSession == null) {
-			throw new RestartResponseAtInterceptPageException(PlanningPokerApplication.get()
-					.getHomePage());
+			throw new RestartResponseAtInterceptPageException(
+					PlanningPokerApplication.get().getHomePage());
 		}
 
 		if (planningSession.isParticipating() == false) {
-			throw new RestartResponseAtInterceptPageException(new EnterNamePage(planningSession));
+			throw new RestartResponseAtInterceptPageException(
+					new EnterNamePage(planningSession));
 		}
 
 		if (planningSession.isStarted()) {
-			throw new RestartResponseAtInterceptPageException(PlanningPokerApplication.get()
-					.getHomePage());
+			throw new RestartResponseAtInterceptPageException(
+					PlanningPokerApplication.get().getHomePage());
 		}
 
 		if (planningSession.getSessionStatus() == SessionStatus.TERMINATED) {
-			throw new RestartResponseAtInterceptPageException(TerminatedPage.class);
+			throw new RestartResponseAtInterceptPageException(
+					TerminatedPage.class);
 		}
 
-		setModel(new Model<PlanningSession>(planningSession));
+		setDefaultModel(new Model<PlanningSession>(planningSession));
 
-		updatingBehavior = new AjaxCompoundUpdatingTimerBehavior(Duration.ONE_SECOND);
+		updatingBehavior = new AjaxCompoundUpdatingTimerBehavior(
+				Duration.ONE_SECOND);
 		add(updatingBehavior);
 
 		// Get participant so he can get a heart beat.
@@ -102,30 +105,44 @@ public class PlanningPage extends BasePage<PlanningSession> {
 		addPlanningSessionResultTable();
 	}
 
+	@SuppressWarnings("unchecked")
+	public IModel<PlanningSession> getModel() {
+		return (IModel<PlanningSession>) getDefaultModel();
+	}
+
+	public PlanningSession getModelObject() {
+		return (PlanningSession) getDefaultModelObject();
+	}
+
 	private void addPlanningSessionResultTable() {
-		planningSessionResultTable = new PlanningSessionResultTable("planningSessionResultTable",
-				getModel());
-		updatingBehavior.add(new ComponentUpdatingListener<PlanningSessionResultTable>(
-				planningSessionResultTable, new IUpdatingComponent<PlanningSessionResultTable>() {
-					private static final long serialVersionUID = 1L;
+		planningSessionResultTable = new PlanningSessionResultTable(
+				"planningSessionResultTable", getModel());
+		updatingBehavior
+				.add(new ComponentUpdatingListener<PlanningSessionResultTable>(
+						planningSessionResultTable,
+						new IUpdatingComponent<PlanningSessionResultTable>() {
+							private static final long serialVersionUID = 1L;
 
-					public Object getStateObject(PlanningSessionResultTable component) {
-						StringBuilder b = new StringBuilder();
+							public Object getStateObject(
+									PlanningSessionResultTable component) {
+								StringBuilder b = new StringBuilder();
 
-						List<PlanningRound> previousRounds = getModelObject().getPreviousRounds();
+								List<PlanningRound> previousRounds = getModelObject()
+										.getPreviousRounds();
 
-						for (PlanningRound planningRound : previousRounds) {
-							b.append(planningRound.getTitle());
-						}
+								for (PlanningRound planningRound : previousRounds) {
+									b.append(planningRound.getTitle());
+								}
 
-						return b;
-					}
-				}));
+								return b;
+							}
+						}));
 		add(planningSessionResultTable);
 	}
 
 	private void addAdministrationPanel() {
-		administrationPanel = new AdministrationPanel("administrationPanel", getModel()) {
+		administrationPanel = new AdministrationPanel("administrationPanel",
+				getModel()) {
 			private static final long serialVersionUID = 1L;
 
 			@Override
@@ -137,17 +154,22 @@ public class PlanningPage extends BasePage<PlanningSession> {
 				target.addComponent(roundTitle);
 			}
 		};
-		updatingBehavior.add(new ComponentUpdatingListener<AdministrationPanel>(
-				administrationPanel, new IUpdatingComponent<AdministrationPanel>() {
-					private static final long serialVersionUID = 1L;
+		updatingBehavior
+				.add(new ComponentUpdatingListener<AdministrationPanel>(
+						administrationPanel,
+						new IUpdatingComponent<AdministrationPanel>() {
+							private static final long serialVersionUID = 1L;
 
-					public Object getStateObject(AdministrationPanel component) {
-						PlanningSession modelObject = component.getModelObject();
-						PlanningRound currentPlanningRound = modelObject.getCurrentPlanningRound();
-						return modelObject.isStarted()
-								&& currentPlanningRound.isFinished() == false;
-					}
-				}));
+							public Object getStateObject(
+									AdministrationPanel component) {
+								PlanningSession modelObject = component
+										.getModelObject();
+								PlanningRound currentPlanningRound = modelObject
+										.getCurrentPlanningRound();
+								return modelObject.isStarted()
+										&& currentPlanningRound.isFinished() == false;
+							}
+						}));
 		add(administrationPanel);
 	}
 
@@ -162,8 +184,8 @@ public class PlanningPage extends BasePage<PlanningSession> {
 				target.addComponent(administrationPanel);
 			}
 		};
-		updatingBehavior.add(new ComponentUpdatingListener<DeckPanel>(deckPanel,
-				new IUpdatingComponent<DeckPanel>() {
+		updatingBehavior.add(new ComponentUpdatingListener<DeckPanel>(
+				deckPanel, new IUpdatingComponent<DeckPanel>() {
 					private static final long serialVersionUID = 1L;
 
 					public Object getStateObject(DeckPanel component) {
@@ -174,22 +196,24 @@ public class PlanningPage extends BasePage<PlanningSession> {
 	}
 
 	private void addPlanningTable(PlanningSession planningSession) {
-		planningTable = new PlanningTable("planningTable", new Model<PlanningSession>(
-				planningSession));
-		updatingBehavior.add(new ComponentUpdatingListener<PlanningTable>(planningTable,
-				new IUpdatingComponent<PlanningTable>() {
+		planningTable = new PlanningTable("planningTable",
+				new Model<PlanningSession>(planningSession));
+		updatingBehavior.add(new ComponentUpdatingListener<PlanningTable>(
+				planningTable, new IUpdatingComponent<PlanningTable>() {
 					private static final long serialVersionUID = 1L;
 
 					public Object getStateObject(PlanningTable component) {
 						StringBuilder state = new StringBuilder();
-						for (Participant participant : component.getModelObject().getParticipants()) {
+						for (Participant participant : component
+								.getModelObject().getParticipants()) {
 							state.append(participant.getName());
 							state.append(participant.getHealth());
 
-							PlanningRound currentPlanningRound = component.getModelObject()
-									.getCurrentPlanningRound();
+							PlanningRound currentPlanningRound = component
+									.getModelObject().getCurrentPlanningRound();
 							if (currentPlanningRound != null) {
-								state.append(currentPlanningRound.getCard(participant));
+								state.append(currentPlanningRound
+										.getCard(participant));
 							}
 						}
 						return state;
@@ -198,9 +222,12 @@ public class PlanningPage extends BasePage<PlanningSession> {
 		add(planningTable);
 	}
 
-	private void addPlanningRoundResultTable(final IModel<PlanningRound> planningRoundModel) {
-		planningRoundResultTable = new PlanningRoundResultTable("planningRoundResultTable",
-				new PropertyModel<PlanningRoundResult>(planningRoundModel, "planningRoundResult")) {
+	private void addPlanningRoundResultTable(
+			final IModel<PlanningRound> planningRoundModel) {
+		planningRoundResultTable = new PlanningRoundResultTable(
+				"planningRoundResultTable",
+				new PropertyModel<PlanningRoundResult>(planningRoundModel,
+						"planningRoundResult")) {
 			private static final long serialVersionUID = 1L;
 
 			@Override
@@ -211,42 +238,48 @@ public class PlanningPage extends BasePage<PlanningSession> {
 			@Override
 			public boolean isVisible() {
 				PlanningRound planningRound = planningRoundModel.getObject();
-				boolean enabled = planningRound != null && planningRound.isComplete();
+				boolean enabled = planningRound != null
+						&& planningRound.isComplete();
 				return enabled;
 			}
 		};
 		planningRoundResultTable.setOutputMarkupPlaceholderTag(true);
-		updatingBehavior.add(new ComponentUpdatingListener<PlanningRoundResultTable>(
-				planningRoundResultTable));
+		updatingBehavior
+				.add(new ComponentUpdatingListener<PlanningRoundResultTable>(
+						planningRoundResultTable));
 		add(planningRoundResultTable);
 	}
 
 	private void addRoundTitle() {
-		IModel<PlanningRound> roundModel = new PropertyModel<PlanningRound>(getModel(),
-				"currentPlanningRound");
+		IModel<PlanningRound> roundModel = new PropertyModel<PlanningRound>(
+				getModel(), "currentPlanningRound");
 
-		roundTitle = new PlanningRoundTitleEditableLabel("roundTitle", roundModel);
+		roundTitle = new PlanningRoundTitleEditableLabel("roundTitle",
+				roundModel);
 		roundTitle.setOutputMarkupPlaceholderTag(true);
-		updatingBehavior.add(new ComponentUpdatingListener<PlanningRoundTitleEditableLabel>(
-				roundTitle, new IUpdatingComponent<PlanningRoundTitleEditableLabel>() {
-					private static final long serialVersionUID = 1L;
+		updatingBehavior
+				.add(new ComponentUpdatingListener<PlanningRoundTitleEditableLabel>(
+						roundTitle,
+						new IUpdatingComponent<PlanningRoundTitleEditableLabel>() {
+							private static final long serialVersionUID = 1L;
 
-					public Object getStateObject(PlanningRoundTitleEditableLabel component) {
-						StringBuilder b = new StringBuilder();
-						b.append(component.isEnabled());
-						b.append(component.isVisible());
-						if (component.getModelObject() != null) {
-							b.append(component.getModelObject());
-						}
-						return b;
-					}
-				}));
+							public Object getStateObject(
+									PlanningRoundTitleEditableLabel component) {
+								StringBuilder b = new StringBuilder();
+								b.append(component.isEnabled());
+								b.append(component.isVisible());
+								if (component.getDefaultModelObject() != null) {
+									b.append(component.getDefaultModelObject());
+								}
+								return b;
+							}
+						}));
 		add(roundTitle);
 	}
 
 	private void addSessionTitle() {
-		add(new Label<String>("sessionTitle", new StringResourceModel("planningSessionTitle", this,
-				getModel())));
+		add(new Label("sessionTitle", new StringResourceModel(
+				"planningSessionTitle", this, getModel())));
 	}
 
 	private void addHeartBeat() {
@@ -266,18 +299,21 @@ public class PlanningPage extends BasePage<PlanningSession> {
 
 		// Add participant heart beat
 		Participant participant = getModelObject().getParticipant();
-		updatingBehavior.add(new HeartBeatUpdatingListener<Participant>(participant) {
+		updatingBehavior.add(new HeartBeatUpdatingListener<Participant>(
+				participant) {
 			private static final long serialVersionUID = 1L;
 
 			@Override
-			protected void onBeat(AjaxRequestTarget target, Participant participant) {
+			protected void onBeat(AjaxRequestTarget target,
+					Participant participant) {
 				PlanningSession planningSession = getModelObject();
 				ParticipantStatus participantStatus = planningSession
 						.getParticipantStatus(participant);
 
 				if (participantStatus == ParticipantStatus.TERMINATED
 						|| participantStatus == ParticipantStatus.UNKNOWN) {
-					throw new RestartResponseAtInterceptPageException(TerminatedPage.class);
+					throw new RestartResponseAtInterceptPageException(
+							TerminatedPage.class);
 				}
 			}
 		});

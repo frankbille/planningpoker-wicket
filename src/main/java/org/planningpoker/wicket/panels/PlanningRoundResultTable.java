@@ -6,18 +6,18 @@ import java.util.List;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
-import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.AbstractReadOnlyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.planningpoker.domain.ICard;
 import org.planningpoker.wicket.PlanningRoundResult;
+import org.planningpoker.wicket.components.GenericPanel;
 
 /**
  * Renders the planning round result.
  */
-public class PlanningRoundResultTable extends Panel<PlanningRoundResult> {
+public class PlanningRoundResultTable extends GenericPanel<PlanningRoundResult> {
 	private static final long serialVersionUID = 1L;
 
 	/**
@@ -34,19 +34,21 @@ public class PlanningRoundResultTable extends Panel<PlanningRoundResult> {
 		setOutputMarkupId(true);
 		setOutputMarkupPlaceholderTag(true);
 
-		add(new ListView<ICard>("cards", new PropertyModel<List<ICard>>(model, "cards")) {
+		add(new ListView<ICard>("cards", new PropertyModel<List<ICard>>(model,
+				"cards")) {
 			private static final long serialVersionUID = 1L;
 
 			@Override
 			protected void populateItem(final ListItem<ICard> item) {
-				item.add(new Label<String>("card", new PropertyModel<String>(item.getModel(),
-						"displayValue")));
+				item.add(new Label("card", new PropertyModel<String>(item
+						.getModel(), "displayValue")));
 
 				final PlanningRoundResult planningRoundResult = PlanningRoundResultTable.this
 						.getModelObject();
 
-				item.add(new Label<Integer>("count", new Model<Integer>(planningRoundResult
-						.getCardCount(item.getModelObject()))));
+				item.add(new Label("count",
+						new Model<Integer>(planningRoundResult
+								.getCardCount(item.getModelObject()))));
 
 				IModel<String> pctModel = new AbstractReadOnlyModel<String>() {
 					private static final long serialVersionUID = 1L;
@@ -54,11 +56,12 @@ public class PlanningRoundResultTable extends Panel<PlanningRoundResult> {
 					@Override
 					public String getObject() {
 						return NumberFormat.getPercentInstance().format(
-								planningRoundResult.getCardPercentage(item.getModelObject()));
+								planningRoundResult.getCardPercentage(item
+										.getModelObject()));
 					}
 				};
 
-				item.add(new Label<String>("percentage", pctModel));
+				item.add(new Label("percentage", pctModel));
 
 				IModel<String> averageModel = new AbstractReadOnlyModel<String>() {
 					private static final long serialVersionUID = 1L;
@@ -69,7 +72,7 @@ public class PlanningRoundResultTable extends Panel<PlanningRoundResult> {
 								planningRoundResult.getCardAverage());
 					}
 				};
-				item.add(new Label<String>("average", averageModel));
+				item.add(new Label("average", averageModel));
 
 			}
 

@@ -28,7 +28,7 @@ public class ClickConfirmBehavior extends AbstractBehavior {
 	}
 
 	@Override
-	public void onComponentTag(Component<?> component, ComponentTag tag) {
+	public void onComponentTag(Component component, ComponentTag tag) {
 		if (tag.isClose() == false) {
 			StringBuilder b = new StringBuilder();
 
@@ -54,7 +54,8 @@ public class ClickConfirmBehavior extends AbstractBehavior {
 	protected CharSequence getEscapedModelObject() {
 		Object modelObject = textModel.getObject();
 		String modelObjectString = Strings.toString(modelObject);
-		CharSequence escapedModelString = JavascriptUtils.escapeQuotes(modelObjectString);
+		CharSequence escapedModelString = JavascriptUtils
+				.escapeQuotes(modelObjectString);
 		return escapedModelString;
 	}
 

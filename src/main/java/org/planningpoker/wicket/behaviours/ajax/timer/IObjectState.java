@@ -19,7 +19,7 @@ public interface IObjectState extends Serializable {
 	 * 
 	 * @param stateObject
 	 *            The object which should be checked if it has been changed.
-	 * @return
+	 * @return True if the state has changed.
 	 */
 	boolean checkState(Object stateObject);
 

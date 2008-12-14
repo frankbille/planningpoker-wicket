@@ -3,17 +3,26 @@ package org.planningpoker.wicket.panels;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.html.link.Link;
-import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.StringResourceModel;
 import org.planningpoker.wicket.PlanningRound;
 import org.planningpoker.wicket.PlanningSession;
 import org.planningpoker.wicket.behaviours.ClickConfirmBehavior;
+import org.planningpoker.wicket.components.GenericPanel;
 import org.planningpoker.wicket.pages.TerminatedPage;
 
-public class AdministrationPanel extends Panel<PlanningSession> {
+/**
+ * Panel, shown to administrators of a planning session
+ */
+public class AdministrationPanel extends GenericPanel<PlanningSession> {
 	private static final long serialVersionUID = 1L;
 
+	/**
+	 * Constructor
+	 * 
+	 * @param id
+	 * @param model
+	 */
 	public AdministrationPanel(String id, IModel<PlanningSession> model) {
 		super(id, model);
 

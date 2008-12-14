@@ -25,7 +25,7 @@ public class ToolTipBehavior extends AbstractBehavior {
 	}
 
 	@Override
-	public void onComponentTag(Component<?> component, ComponentTag tag) {
+	public void onComponentTag(Component component, ComponentTag tag) {
 		if (tag.isClose() == false) {
 			CharSequence escapedModelObject = getEscapedModelObject();
 
@@ -37,7 +37,8 @@ public class ToolTipBehavior extends AbstractBehavior {
 		Object modelObject = textModel.getObject();
 
 		String modelObjectString = Strings.toString(modelObject);
-		CharSequence escapedModelString = Strings.escapeMarkup(modelObjectString);
+		CharSequence escapedModelString = Strings
+				.escapeMarkup(modelObjectString);
 		return escapedModelString;
 	}
 

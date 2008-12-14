@@ -20,15 +20,29 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.IHeaderResponse;
 import org.apache.wicket.util.time.Duration;
 
+/**
+ * AJAX behavior for doing scheduled, repeating updates.
+ */
 public class AjaxSelfUpdatingTimerBehavior extends AbstractAjaxTimerBehavior {
 	private static final long serialVersionUID = 1L;
 
 	private final IObjectState state;
 
+	/**
+	 * Constructor. Uses {@link SerializableObjectState}
+	 * 
+	 * @param updateInterval
+	 */
 	public AjaxSelfUpdatingTimerBehavior(Duration updateInterval) {
 		this(updateInterval, new SerializableObjectState());
 	}
 
+	/**
+	 * Constructor
+	 * 
+	 * @param updateInterval
+	 * @param objectState
+	 */
 	public AjaxSelfUpdatingTimerBehavior(Duration updateInterval,
 			IObjectState objectState) {
 		super(updateInterval);
@@ -55,14 +69,14 @@ public class AjaxSelfUpdatingTimerBehavior extends AbstractAjaxTimerBehavior {
 
 	@Override
 	protected void onHeadRendered(IHeaderResponse response) {
-		state.checkState(getComponent().getModelObject());
+		state.checkState(getComponent().getDefaultModelObject());
 	}
 
 	protected void onPostTimerUpdated(AjaxRequestTarget target) {
 	}
 
 	protected Object getStateObject() {
-		return getComponent().getModelObject();
+		return getComponent().getDefaultModelObject();
 	}
 
 }

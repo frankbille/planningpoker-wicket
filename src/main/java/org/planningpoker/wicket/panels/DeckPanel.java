@@ -7,16 +7,25 @@ import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.html.image.Image;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
-import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.planningpoker.domain.ICard;
 import org.planningpoker.wicket.PlanningRound;
 import org.planningpoker.wicket.cardimage.CardImageResourceReference;
+import org.planningpoker.wicket.components.GenericPanel;
 
-public class DeckPanel extends Panel<PlanningRound> {
+/**
+ * Panel for showing a deck of cards
+ */
+public class DeckPanel extends GenericPanel<PlanningRound> {
 	private static final long serialVersionUID = 1L;
 
+	/**
+	 * Constructor
+	 * 
+	 * @param id
+	 * @param model
+	 */
 	public DeckPanel(String id, IModel<PlanningRound> model) {
 		super(id, model);
 
@@ -51,7 +60,7 @@ public class DeckPanel extends Panel<PlanningRound> {
 				};
 				item.add(cardLink);
 
-				cardLink.add(new Image<CardImageResourceReference>("cardImage",
+				cardLink.add(new Image("cardImage",
 						new CardImageResourceReference(item.getModelObject())));
 			}
 

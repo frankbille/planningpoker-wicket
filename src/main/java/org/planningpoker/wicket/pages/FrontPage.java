@@ -21,7 +21,10 @@ import org.planningpoker.wicket.PlanningPokerApplication;
 import org.planningpoker.wicket.PlanningSession;
 import org.planningpoker.wicket.behaviours.ajax.timer.AjaxSelfUpdatingTimerBehavior;
 
-public class FrontPage extends BasePage<Void> {
+/**
+ * Front page, where you can create new sessions or join existing ones.
+ */
+public class FrontPage extends BasePage {
 
 	private static class NewSession implements Serializable {
 		private static final long serialVersionUID = 1L;
@@ -46,6 +49,9 @@ public class FrontPage extends BasePage<Void> {
 		}
 	}
 
+	/**
+	 * 
+	 */
 	public FrontPage() {
 		IModel<List<PlanningSession>> planningSessionsModel = new LoadableDetachableModel<List<PlanningSession>>() {
 			private static final long serialVersionUID = 1L;
@@ -57,7 +63,7 @@ public class FrontPage extends BasePage<Void> {
 			}
 		};
 
-		WebMarkupContainer<List<PlanningSession>> planningSessionsContainer = new WebMarkupContainer<List<PlanningSession>>(
+		WebMarkupContainer planningSessionsContainer = new WebMarkupContainer(
 				"planningSessionsContainer", planningSessionsModel);
 		add(planningSessionsContainer);
 		planningSessionsContainer.add(new AjaxSelfUpdatingTimerBehavior(
@@ -68,12 +74,11 @@ public class FrontPage extends BasePage<Void> {
 
 			@Override
 			protected void populateItem(ListItem<PlanningSession> item) {
-				item.add(new Label<String>("title", new PropertyModel<String>(
-						item.getModel(), "title")));
+				item.add(new Label("title", new PropertyModel<String>(item
+						.getModel(), "title")));
 
-				item.add(new Label<Integer>("participants",
-						new PropertyModel<Integer>(item.getModel(),
-								"participantCount")));
+				item.add(new Label("participants", new PropertyModel<Integer>(
+						item.getModel(), "participantCount")));
 
 				Link<PlanningSession> joinLink = new Link<PlanningSession>(
 						"joinLink", item.getModel()) {
@@ -117,7 +122,7 @@ public class FrontPage extends BasePage<Void> {
 
 		form.add(new TextField<String>("name").setRequired(true));
 
-		form.add(new Button<String>("createSession", new StringResourceModel(
+		form.add(new Button("createSession", new StringResourceModel(
 				"createSession", this, null)));
 	}
 

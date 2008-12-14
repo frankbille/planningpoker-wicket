@@ -11,10 +11,18 @@ import org.apache.wicket.model.StringResourceModel;
 import org.planningpoker.wicket.PlanningPokerApplication;
 import org.planningpoker.wicket.PlanningSession;
 
-public class EnterNamePage extends BasePage<Void> {
+/**
+ * Page for entering a name of participant
+ */
+public class EnterNamePage extends BasePage {
 
 	private String name;
 
+	/**
+	 * Constructor
+	 * 
+	 * @param planningSession
+	 */
 	public EnterNamePage(PlanningSession planningSession) {
 		if (planningSession == null) {
 			throw new RestartResponseAtInterceptPageException(
@@ -50,14 +58,21 @@ public class EnterNamePage extends BasePage<Void> {
 		nameField.setRequired(true);
 		form.add(nameField);
 
-		form.add(new Button<String>("continue", new StringResourceModel(
-				"continue", this, null)));
+		form.add(new Button("continue", new StringResourceModel("continue",
+				this, null)));
 	}
 
+	/**
+	 * @return The name of the participant
+	 */
 	public String getName() {
 		return name;
 	}
 
+	/**
+	 * @param name
+	 *            The name of the participant
+	 */
 	public void setName(String name) {
 		this.name = name;
 	}
