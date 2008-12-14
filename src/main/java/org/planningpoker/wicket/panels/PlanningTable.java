@@ -22,14 +22,22 @@ import org.planningpoker.wicket.PlanningSession.ParticipantStatus;
 import org.planningpoker.wicket.behaviours.ClickConfirmBehavior;
 import org.planningpoker.wicket.components.GenericPanel;
 
+/**
+ * Planning table.
+ */
 public class PlanningTable extends GenericPanel<PlanningSession> {
 	private static final long serialVersionUID = 1L;
 
+	/**
+	 * Constructor.
+	 * 
+	 * @param id
+	 * @param model
+	 */
 	public PlanningTable(String id, IModel<PlanningSession> model) {
 		super(id, model);
 
-		IModel<List<Participant>> listModel = new PropertyModel<List<Participant>>(
-				model, "participants");
+		IModel<List<Participant>> listModel = new PropertyModel<List<Participant>>(model, "participants");
 
 		add(new ListView<Participant>("participants", listModel) {
 			private static final long serialVersionUID = 1L;
@@ -37,33 +45,26 @@ public class PlanningTable extends GenericPanel<PlanningSession> {
 			@Override
 			protected void populateItem(final ListItem<Participant> item) {
 				WebMarkupContainer userType = new WebMarkupContainer("userType");
-				userType.add(new AttributeModifier("class", true,
-						new AbstractReadOnlyModel<String>() {
-							private static final long serialVersionUID = 1L;
+				userType.add(new AttributeModifier("class", true, new AbstractReadOnlyModel<String>() {
+					private static final long serialVersionUID = 1L;
 
-							@Override
-							public String getObject() {
-								return PlanningTable.this.getModelObject()
-										.isOwner(item.getModelObject()) ? "owner"
-										: "player";
-							}
-						}));
+					@Override
+					public String getObject() {
+						return PlanningTable.this.getModelObject().isOwner(item.getModelObject()) ? "owner" : "player";
+					}
+				}));
 				item.add(userType);
 
-				Label nameLabel = new Label("name", new PropertyModel<String>(
-						item.getModel(), "name"));
-				nameLabel.add(new AttributeModifier("style", true,
-						new AbstractReadOnlyModel<String>() {
-							private static final long serialVersionUID = 1L;
+				Label nameLabel = new Label("name", new PropertyModel<String>(item.getModel(), "name"));
+				nameLabel.add(new AttributeModifier("style", true, new AbstractReadOnlyModel<String>() {
+					private static final long serialVersionUID = 1L;
 
-							@Override
-							public String getObject() {
-								return PlanningTable.this.getModelObject()
-										.getParticipant() == item
-										.getModelObject() ? "text-decoration: underline"
-										: null;
-							}
-						}));
+					@Override
+					public String getObject() {
+						return PlanningTable.this.getModelObject().getParticipant() == item.getModelObject() ? "text-decoration: underline"
+								: null;
+					}
+				}));
 				item.add(nameLabel);
 
 				// Status
@@ -72,17 +73,13 @@ public class PlanningTable extends GenericPanel<PlanningSession> {
 
 					@Override
 					public ParticipantStatus getObject() {
-						PlanningSession planningSession = PlanningTable.this
-								.getModelObject();
-						return planningSession.getParticipantStatus(item
-								.getModelObject());
+						PlanningSession planningSession = PlanningTable.this.getModelObject();
+						return planningSession.getParticipantStatus(item.getModelObject());
 					}
 				};
-				item.add(new Label("status", new StringResourceModel(
-						"status.${name()}", this, statusModel)));
+				item.add(new Label("status", new StringResourceModel("status.${name()}", this, statusModel)));
 
-				WebMarkupContainer pingComponent = new WebMarkupContainer(
-						"ping");
+				WebMarkupContainer pingComponent = new WebMarkupContainer("ping");
 				AbstractReadOnlyModel<String> cssClassModel = new AbstractReadOnlyModel<String>() {
 					private static final long serialVersionUID = 1L;
 
@@ -108,8 +105,7 @@ public class PlanningTable extends GenericPanel<PlanningSession> {
 						return cssClass;
 					}
 				};
-				pingComponent.add(new AttributeModifier("class", true,
-						cssClassModel));
+				pingComponent.add(new AttributeModifier("class", true, cssClassModel));
 				item.add(pingComponent);
 
 				IModel<String> cardModel = new AbstractReadOnlyModel<String>() {
@@ -117,17 +113,13 @@ public class PlanningTable extends GenericPanel<PlanningSession> {
 
 					@Override
 					public String getObject() {
-						PlanningSession planningSession = PlanningTable.this
-								.getModelObject();
-						PlanningRound currentPlanningTurn = planningSession
-								.getCurrentPlanningRound();
+						PlanningSession planningSession = PlanningTable.this.getModelObject();
+						PlanningRound currentPlanningTurn = planningSession.getCurrentPlanningRound();
 						if (currentPlanningTurn != null) {
 							Participant participant = item.getModelObject();
 							if (currentPlanningTurn.hasChosedCard(participant)) {
-								if (currentPlanningTurn.isComplete()
-										|| planningSession.getParticipant() == participant) {
-									ICard card = currentPlanningTurn
-											.getCard(participant);
+								if (currentPlanningTurn.isComplete() || planningSession.getParticipant() == participant) {
+									ICard card = currentPlanningTurn.getCard(participant);
 									return card.getDisplayValue();
 								}
 							}
@@ -139,14 +131,12 @@ public class PlanningTable extends GenericPanel<PlanningSession> {
 				item.add(new Label("card", cardModel));
 
 				// Remove link
-				AjaxLink<Participant> removeLink = new AjaxLink<Participant>(
-						"removeLink", item.getModel()) {
+				AjaxLink<Participant> removeLink = new AjaxLink<Participant>("removeLink", item.getModel()) {
 					private static final long serialVersionUID = 1L;
 
 					@Override
 					public void onClick(AjaxRequestTarget target) {
-						PlanningSession planningSession = PlanningTable.this
-								.getModelObject();
+						PlanningSession planningSession = PlanningTable.this.getModelObject();
 						planningSession.remove(getModelObject());
 						target.addComponent(PlanningTable.this);
 					}
@@ -154,14 +144,11 @@ public class PlanningTable extends GenericPanel<PlanningSession> {
 					@Override
 					public boolean isVisible() {
 						return PlanningTable.this.getModelObject().isOwner()
-								&& PlanningTable.this.getModelObject()
-										.getParticipant().equals(
-												getModelObject()) == false;
+								&& PlanningTable.this.getModelObject().getParticipant().equals(getModelObject()) == false;
 					}
 				};
-				removeLink.add(new ClickConfirmBehavior(
-						new StringResourceModel("confirmRemoveParticipant",
-								this, item.getModel())));
+				removeLink.add(new ClickConfirmBehavior(new StringResourceModel("confirmRemoveParticipant", this, item
+						.getModel())));
 				item.add(removeLink);
 			}
 		});

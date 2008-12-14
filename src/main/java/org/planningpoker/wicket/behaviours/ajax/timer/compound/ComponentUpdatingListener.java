@@ -18,13 +18,14 @@ import org.planningpoker.wicket.behaviours.ajax.timer.compound.AjaxCompoundUpdat
  * object of the component.
  * <p>
  * TODO: Check if this can't be cleaned up a bit.
+ * 
+ * @param <T>
+ *            The component
  */
-public class ComponentUpdatingListener<T extends Component> implements
-		IUpdatingListener {
+public class ComponentUpdatingListener<T extends Component> implements IUpdatingListener {
 	private static final long serialVersionUID = 1L;
 
-	private static class UpdatingComponentState<T extends Component> implements
-			Serializable {
+	private static class UpdatingComponentState<T extends Component> implements Serializable {
 		private static final long serialVersionUID = 1L;
 
 		private final IObjectState objectState;
@@ -34,8 +35,7 @@ public class ComponentUpdatingListener<T extends Component> implements
 			this(updatingComponent, new SerializableObjectState());
 		}
 
-		public UpdatingComponentState(IUpdatingComponent<T> updatingComponent,
-				IObjectState objectState) {
+		public UpdatingComponentState(IUpdatingComponent<T> updatingComponent, IObjectState objectState) {
 			this.updatingComponent = updatingComponent;
 			this.objectState = objectState;
 		}
@@ -64,9 +64,7 @@ public class ComponentUpdatingListener<T extends Component> implements
 			}
 
 			public Object getStateObject(T component) {
-				return isEnabled(component) && component.isEnabled() ? component
-						.getDefaultModelObject()
-						: null;
+				return isEnabled(component) && component.isEnabled() ? component.getDefaultModelObject() : null;
 			}
 		});
 	}
@@ -77,11 +75,9 @@ public class ComponentUpdatingListener<T extends Component> implements
 	 * @param component
 	 * @param updatingComponent
 	 */
-	public ComponentUpdatingListener(T component,
-			IUpdatingComponent<T> updatingComponent) {
+	public ComponentUpdatingListener(T component, IUpdatingComponent<T> updatingComponent) {
 		this.component = component;
-		this.updatingComponentState = new UpdatingComponentState<T>(
-				updatingComponent);
+		this.updatingComponentState = new UpdatingComponentState<T>(updatingComponent);
 
 		component.setOutputMarkupId(true);
 	}

@@ -2,6 +2,10 @@ package org.planningpoker.wicket.behaviours.ajax.timer;
 
 import java.io.Serializable;
 
+/**
+ * Determine if the state of an object has changed. This is used by AJAX timer
+ * to determine of it should transfer the rendered component to the client.
+ */
 public interface IObjectState extends Serializable {
 
 	/**
