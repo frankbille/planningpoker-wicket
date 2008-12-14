@@ -68,6 +68,9 @@ public class NumberCard implements ICard {
 		return getDisplayValue();
 	}
 
+	/**
+	 * @return The number of the card
+	 */
 	public double getNumber() {
 		return number;
 	}

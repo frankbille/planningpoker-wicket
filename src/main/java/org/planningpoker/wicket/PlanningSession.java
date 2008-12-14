@@ -8,7 +8,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.apache.wicket.Session;
 import org.planningpoker.domain.IDeck;
-import org.planningpoker.domain.StandardDeck;
 
 /**
  * A planning session is the full duration of a planning poker game. It includes
@@ -81,7 +80,7 @@ public class PlanningSession implements Serializable {
 	private final Participant owner;
 	private final Stack<PlanningRound> rounds = new Stack<PlanningRound>();
 	private final String title;
-	private final IDeck deck = new StandardDeck();
+	private final IDeck deck;
 	private boolean terminated = false;
 
 	/**
@@ -90,8 +89,8 @@ public class PlanningSession implements Serializable {
 	 * @param title
 	 * @param ownerName
 	 */
-	PlanningSession(String title, String ownerName) {
-		this(title, ownerName, Session.get());
+	PlanningSession(String title, String ownerName, IDeck deck) {
+		this(title, ownerName, deck, Session.get());
 	}
 
 	/**
@@ -103,8 +102,9 @@ public class PlanningSession implements Serializable {
 	 * @param ownerName
 	 * @param ownerSession
 	 */
-	PlanningSession(String title, String ownerName, Session ownerSession) {
+	PlanningSession(String title, String ownerName, IDeck deck, Session ownerSession) {
 		this.title = title;
+		this.deck = deck;
 		owner = addParticipant(ownerName, ownerSession);
 	}
 
@@ -148,8 +148,7 @@ public class PlanningSession implements Serializable {
 	 */
 	public Participant addParticipant(String name, Session session) {
 		if (getSessionStatus() != SessionStatus.SETTING_UP) {
-			throw new IllegalStateException(
-					"Can't add participants when the session is started.");
+			throw new IllegalStateException("Can't add participants when the session is started.");
 		}
 
 		Participant participant = new Participant(name, session);
@@ -166,8 +165,7 @@ public class PlanningSession implements Serializable {
 	 */
 	public void remove(Participant participant) {
 		if (owner.equals(participant)) {
-			throw new IllegalArgumentException(
-					"You cannot remove the owner of the session");
+			throw new IllegalArgumentException("You cannot remove the owner of the session");
 		}
 
 		participants.remove(participant);
@@ -391,8 +389,7 @@ public class PlanningSession implements Serializable {
 	public synchronized PlanningRound createNewRound(Participant participant) {
 		// Only the owner may do this
 		if (isDealer(participant) == false) {
-			throw new IllegalArgumentException(
-					"Only the owner may create a new round");
+			throw new IllegalArgumentException("Only the owner may create a new round");
 		}
 
 		if (getCurrentPlanningRound() == null) {
@@ -469,8 +466,7 @@ public class PlanningSession implements Serializable {
 	 */
 	public void terminate(Participant participant) {
 		if (isDealer(participant) == false) {
-			throw new IllegalArgumentException(
-					"Only the dealer may terminate the planning session.");
+			throw new IllegalArgumentException("Only the dealer may terminate the planning session.");
 		}
 
 		terminated = true;

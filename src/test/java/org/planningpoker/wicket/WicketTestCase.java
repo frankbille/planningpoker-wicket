@@ -17,6 +17,7 @@ import org.apache.wicket.protocol.http.WebResponse;
 import org.apache.wicket.protocol.http.servlet.ServletWebRequest;
 import org.apache.wicket.util.tester.WicketTester;
 import org.junit.Before;
+import org.planningpoker.domain.StandardDeck;
 
 /**
  * Abstract test case providing a wicket tester
@@ -80,7 +81,8 @@ public abstract class WicketTestCase {
 
 	protected PlanningSession createPlanningSession() {
 		PlanningSession planningSession = new PlanningSession(
-				"Started session", "Owner", createNewSession());
+				"Started session", "Owner", new StandardDeck(),
+				createNewSession());
 
 		planningSession.addParticipant("Participant 1", createNewSession());
 		planningSession.addParticipant("Participant 2", createNewSession());

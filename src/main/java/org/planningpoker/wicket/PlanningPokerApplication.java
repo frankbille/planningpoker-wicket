@@ -8,6 +8,7 @@ import org.apache.wicket.Page;
 import org.apache.wicket.Session;
 import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.request.target.coding.HybridUrlCodingStrategy;
+import org.planningpoker.domain.IDeck;
 import org.planningpoker.wicket.PlanningSession.SessionStatus;
 import org.planningpoker.wicket.pages.EnterNamePage;
 import org.planningpoker.wicket.pages.FrontPage;
@@ -27,10 +28,8 @@ public class PlanningPokerApplication extends WebApplication {
 
 	@Override
 	protected void init() {
-		mount(new HybridUrlCodingStrategy("/planning", PlanningPage.class,
-				false));
-		mount(new HybridUrlCodingStrategy("/entername", EnterNamePage.class,
-				false));
+		mount(new HybridUrlCodingStrategy("/planning", PlanningPage.class, false));
+		mount(new HybridUrlCodingStrategy("/entername", EnterNamePage.class, false));
 		mountBookmarkablePage("/terminated", TerminatedPage.class);
 	}
 
@@ -48,11 +47,12 @@ public class PlanningPokerApplication extends WebApplication {
 	 *            The title of the planning session.
 	 * @param ownerName
 	 *            The name of the owner of the planning session.
+	 * @param deck
+	 *            The deck to use in this session for all participants
 	 * @return The new planning session.
 	 */
-	public PlanningSession createNewPlanningSession(String title,
-			String ownerName) {
-		return createNewPlanningSession(title, ownerName, Session.get());
+	public PlanningSession createNewPlanningSession(String title, String ownerName, IDeck deck) {
+		return createNewPlanningSession(title, ownerName, deck, Session.get());
 	}
 
 	/**
@@ -62,14 +62,14 @@ public class PlanningPokerApplication extends WebApplication {
 	 *            The title of the planning session.
 	 * @param ownerName
 	 *            The name of the owner of the planning session.
+	 * @param deck
+	 *            The deck to use in this session for all participants
 	 * @param ownerSession
 	 *            The Wicket {@link Session} of the owner.
 	 * @return The new planning session.
 	 */
-	public PlanningSession createNewPlanningSession(String title,
-			String ownerName, Session ownerSession) {
-		PlanningSession planningSession = new PlanningSession(title, ownerName,
-				ownerSession);
+	public PlanningSession createNewPlanningSession(String title, String ownerName, IDeck deck, Session ownerSession) {
+		PlanningSession planningSession = new PlanningSession(title, ownerName, deck, ownerSession);
 		planningSessions.add(planningSession);
 		return planningSession;
 	}

@@ -33,7 +33,10 @@
 	</p>
 	
 	<p>
-		<input type="submit" wicket:id="createSession" />
+		<wicket:message key="cardDeck"></wicket:message><br />
+		<select wicket:id="deck"></select>
+	<p>
+		<input type="submit" wicket:id="createSession" wicket:message="value:createSession" />
 	</p>
 </form>
 

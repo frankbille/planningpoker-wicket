@@ -11,6 +11,7 @@ import org.apache.wicket.protocol.http.servlet.ServletWebRequest;
 import org.apache.wicket.util.tester.WicketTester;
 import org.junit.Test;
 import org.planningpoker.domain.ICard;
+import org.planningpoker.domain.StandardDeck;
 
 public class TestPlanningRound {
 
@@ -21,7 +22,8 @@ public class TestPlanningRound {
 		WebSession ses1 = createSession();
 		WebSession ses2 = createSession();
 		WebSession ses3 = createSession();
-		PlanningSession session = new PlanningSession("Test", "P1", ses1);
+		PlanningSession session = new PlanningSession("Test", "P1",
+				new StandardDeck(), ses1);
 		session.addParticipant("P2", ses2);
 		session.addParticipant("P3", ses3);
 
