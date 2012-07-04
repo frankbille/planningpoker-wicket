@@ -1,7 +1,7 @@
                                 PLANNING POKER
                                ================
 
- About
+About
 -------     
 
 The application was created as an example application to show how to create an
@@ -14,17 +14,17 @@ Read more about the Planning Poker concept on Wikipedia:
     http://en.wikipedia.org/wiki/Planning_Poker
 
 
- RUN
+RUN
 -----
 
-To run the application you need java 1.5 and maven2 installed.  When you have
+To run the application you need java 1.6 and maven2 installed.  When you have
 that run the following command to start the application:
 
     # mvn jetty:run
     
 Then open a browser and go to:
 
-    http://localhost:8080/planningpoker-wicket/
+    http://localhost:8080/planningpoker/
     
 
 You can also package the application into a war file and deploy it yourself:
@@ -32,7 +32,7 @@ You can also package the application into a war file and deploy it yourself:
     # mvn package
     
  
- License
+License
 ---------
 
 Released under the Apache Software License 2.  See LICENSE.txt
